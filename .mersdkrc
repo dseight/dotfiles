@@ -1,0 +1,5 @@
+mount_sdk() {
+    echo "Mounting /media as ${sdkroot}/media"
+    mkdir -p ${sdkroot}/media
+    mount --rbind /media ${sdkroot}/media
+}

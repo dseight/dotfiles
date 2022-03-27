@@ -1,0 +1,7 @@
+alias ll="ls -lah"
+alias codespell="codespell --skip '.git,*.o,*.so,*.so.*,*.rpm'"
+alias lizard="lizard -Eduplicate"
+
+if [[ "$(uname)" = "Darwin" ]]; then
+    alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
+fi
