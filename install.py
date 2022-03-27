@@ -120,21 +120,42 @@ class DotfilesConfig:
             json.dump(content, f, indent=4)
 
 
+class _InstallationEntry:
+
+    def __init__(self, name: str, src: str, dst: Path):
+        # Name of file relative to the install path
+        self.name = name
+        # Actual file location to copy from
+        self.src = src
+        # Full path to the file install location
+        self.dst = dst
+
+
 class InstallerNotOnTTYException(Exception):
     ...
 
 
 class Installer:
 
-    def __init__(self, files: Iterable[str],
-                 install_root: Path, config: DotfilesConfig):
-        self._files = files
+    def __init__(self, install_root: Path, config: DotfilesConfig):
         self._install_root = install_root
         self._config = config
 
-        self._new: Iterable[str] = []
-        self._changed: Iterable[str] = []
+        self._entries: Iterable[_InstallationEntry] = []
+        self._new: Iterable[_InstallationEntry] = []
+        self._changed: Iterable[_InstallationEntry] = []
         self._removed: Iterable[str] = []
+
+    def add(self, files: Iterable[str], base: str = ''):
+        """
+        Add list of files to install.
+
+        :param files: list of files to install
+        :param base: base directory where files these files are located
+        """
+        for f in files:
+            entry = _InstallationEntry(f, base + f, self._install_root / f)
+            self._entries.append(entry)
 
     def install(self, interactive: bool):
         self._collect_changes()
@@ -148,33 +169,33 @@ class Installer:
         self._config.save()
 
     def _collect_changes(self):
-        for src in self._files:
-            dst = self._install_root / src
-
-            if not dst.exists():
-                self._new.append(src)
-            elif src not in self._config.installed():
-                print(f'Warning: "{src}" already installed but untracked')
-                if filecmp.cmp(src, dst):
-                    self._new.append(src)
+        for e in self._entries:
+            if not e.dst.exists():
+                self._new.append(e)
+            elif e.name not in self._config.installed():
+                print(f'Warning: "{e.name}" already installed but untracked')
+                if filecmp.cmp(e.src, e.dst):
+                    self._new.append(e)
                 else:
-                    self._changed.append(src)
-            elif not filecmp.cmp(src, dst):
-                self._changed.append(src)
+                    self._changed.append(e)
+            elif not filecmp.cmp(e.src, e.dst):
+                self._changed.append(e)
+
+        names_to_install = set(map(lambda e: e.name, self._entries))
 
         self._removed = list(filter(
-            lambda f: f not in self._files, self._config.installed()))
+            lambda f: f not in names_to_install, self._config.installed()))
 
     def _print_changes_summary(self):
         if self._new:
-            pretty_new = map(lambda x: '\n\t' +
-                             colorize(x, CL_GREEN), self._new)
+            pretty_new = map(lambda e: '\n\t' +
+                             colorize(e.name, CL_GREEN), self._new)
             print('New files:',
                   ''.join(pretty_new), end='\n\n')
 
         if self._changed:
-            pretty_changed = map(lambda x: '\n\t' +
-                                 colorize(x, CL_RED), self._changed)
+            pretty_changed = map(lambda e: '\n\t' +
+                                 colorize(e.name, CL_RED), self._changed)
             print('Modified files:',
                   ''.join(pretty_changed), end='\n\n')
 
@@ -202,11 +223,11 @@ class Installer:
         sys.stdout.writelines(diff)
 
     def _install(self, install_changed_file):
-        for src in self._new:
-            self._install_file(src, self._install_root / src)
+        for e in self._new:
+            self._install_file(e.src, e.dst)
 
-        for src in self._changed:
-            install_changed_file(src, self._install_root / src)
+        for e in self._changed:
+            install_changed_file(e.src, e.dst)
 
         for src in self._removed:
             self._remove_file(src)
@@ -240,7 +261,8 @@ if __name__ == '__main__':
 
     home = Path.home()
     config = DotfilesConfig(home / '.dotfiles')
-    installer = Installer(INSTALL_FILES, home, config)
+    installer = Installer(home, config)
+    installer.add(INSTALL_FILES)
 
     try:
         installer.install(not args.non_interactive)
