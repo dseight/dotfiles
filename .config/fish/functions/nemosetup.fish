@@ -15,11 +15,36 @@ function _nemosetup_help
     echo "    -h, --help    Print help information"
 end
 
-function _nemosetup_enable_early_ssh
-    set -l remote $argv[1]
+function _nemosetup_internal --no-scope-shadowing
+    set -x SSH_ASKPASS $askpass
+    set -x SSH_ASKPASS_REQUIRE force
 
-    ssh root@$remote "mkdir -p /var/lib/environment/usb-moded \
-        && echo 'USB_MODED_ARGS=-r' > /var/lib/environment/usb-moded/alwaysdevmode.conf"
+    ssh-copy-id \
+        $ssh_options \
+        -o PubkeyAuthentication=no \
+        -o StrictHostKeyChecking=no \
+        $user@$host || return 1
+
+    echo \
+"mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+cat /home/\$LOGNAME/.ssh/authorized_keys > /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+rm -f /tmp/rootsetup.sh" \
+        | ssh $ssh_options $user@$host "cat > /tmp/rootsetup.sh" \
+        || return 1
+
+    echo $password | ssh $ssh_options $user@$host "devel-su sh /tmp/rootsetup.sh" \
+        || return 1
+
+    # Unset askpass, otherwise ssh might try to use it for local key
+    set -e SSH_ASKPASS
+    set -e SSH_ASKPASS_REQUIRE
+
+    # Enable early SSH
+    ssh $ssh_options root@$host "mkdir -p /var/lib/environment/usb-moded \
+        && echo 'USB_MODED_ARGS=-r' > /var/lib/environment/usb-moded/alwaysdevmode.conf" \
+        || return 1
 end
 
 function nemosetup --description "Deploy ssh keys to the Sailfish OS device"
@@ -65,12 +90,6 @@ function nemosetup --description "Deploy ssh keys to the Sailfish OS device"
         set host $FALLBACK_HOST
     end
 
-    if not command -v expect >/dev/null 2>&1
-        echo "Error: 'expect' must be installed to setup device."
-        echo "Consider to install it with your favorite package manager."
-        return 1
-    end
-
     if not ssh-add -l >/dev/null 2>&1
         set -l ssh_add_cmd "ssh-add"
         if test (uname) = Darwin
@@ -87,29 +106,16 @@ function nemosetup --description "Deploy ssh keys to the Sailfish OS device"
     set -l resolved_host (ssh -G $host | awk '/^hostname / { print $2 }')
     ssh-keygen -R $resolved_host
 
-    echo \
-"spawn ssh-copy-id \
-    -o PubkeyAuthentication=no \
-    -o StrictHostKeyChecking=no \
-    $user@$host
-expect \"assword:\"
-send \"$password\r\"
-expect eof" | expect
+    set -l askpass (mktemp)
 
     echo \
-"mkdir -p /root/.ssh
-chmod 700 /root/.ssh
-cat /home/\$LOGNAME/.ssh/authorized_keys > /root/.ssh/authorized_keys
-chmod 600 /root/.ssh/authorized_keys
-rm -f /tmp/rootsetup.sh" | ssh $user@$host "cat > /tmp/rootsetup.sh"
+"#!/bin/sh
+echo $password" > $askpass
+    chmod +x $askpass
 
-    echo \
-"spawn ssh -t $user@$host \"devel-su sh /tmp/rootsetup.sh\"
-expect \"Password: \"
-send \"$password\r\n\"
-expect eof" | expect
+    _nemosetup_internal
 
-    _nemosetup_enable_early_ssh $host
+    rm -f $askpass
 end
 
 complete -f -c nemosetup -d Remote -xa "(__fish_complete_user_at_hosts)"
