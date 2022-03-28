@@ -91,15 +91,28 @@ function nemosetup --description "Deploy ssh keys to the Sailfish OS device"
     end
 
     if not ssh-add -l >/dev/null 2>&1
-        set -l ssh_add_cmd "ssh-add"
-        if test (uname) = Darwin
-            set ssh_add_cmd "ssh-add -K"
+        set -l fallback_keys id_ecdsa id_ed25519 id_ed25519_sk id_rsa
+
+        for key in $fallback_keys
+            set -l key_path $HOME/.ssh/$key
+            if test -e $key_path
+                set ssh_options -i $key_path
+                echo "Warning: ssh-agent has no identities, falling back to $key_path"
+                break
+            end
         end
 
-        echo "Error: ssh-agent has no identities."
-        echo "Consider to run '$ssh_add_cmd' before invoking nemosetup."
-        echo "If you do not created any keys yet, then run 'ssh-keygen' first."
-        return 1
+        if not set -q ssh_options
+            set -l ssh_add_cmd "ssh-add"
+            if test (uname) = Darwin
+                set ssh_add_cmd "ssh-add -K"
+            end
+
+            echo "Error: ssh-agent has no identities."
+            echo "Consider to run '$ssh_add_cmd' before invoking nemosetup."
+            echo "If you have not created any keys yet, run 'ssh-keygen' first."
+            return 1
+        end
     end
 
     # "ssh-keygen -R" won't remove key based on the host from ~/.ssh/config
