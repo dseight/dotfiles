@@ -6,6 +6,11 @@ if status is-interactive
     abbr -a -g ga git add
     abbr -a -g gap git add -p
 
+    abbr -a -g gb git branch
+    abbr -a -g gba git branch -a
+    abbr -a -g gbd git branch -d
+    abbr -a -g gbm git branch -m
+
     abbr -a -g gc git commit -v
     abbr -a -g gca git commit -v --amend
 
