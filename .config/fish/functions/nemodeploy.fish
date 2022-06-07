@@ -32,7 +32,7 @@ end
 
 function nemodeploy --description "Deploy packages to the Sailfish OS device"
     set -l options h/help r/remote=
-    argparse -n nemodeploy --max-args=1 $options -- $argv
+    argparse -n nemodeploy $options -- $argv
     or return
 
     if set -q _flag_help
