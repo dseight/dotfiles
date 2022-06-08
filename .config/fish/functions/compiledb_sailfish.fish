@@ -28,7 +28,7 @@ import os
 import re
 import shlex
 import sys
-from typing import Iterable
+from typing import List, Iterable
 
 UNSUPPORTED_OPTIONS = frozenset((
     '-mfloat-abi=hard',
@@ -68,7 +68,7 @@ def find_cross_target(usr_path):
         return None
 
 
-def fix_arguments_list(args: list[str], usr_path, store_cross_target) -> Iterable[str]:
+def fix_arguments_list(args: List[str], usr_path, store_cross_target) -> Iterable[str]:
     args = args.copy()
 
     # Drop ccache to fix compiler detection
