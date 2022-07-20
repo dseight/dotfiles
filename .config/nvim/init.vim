@@ -73,7 +73,23 @@ require'lualine'.setup {
 }
 
 require'nvim-treesitter.configs'.setup {
-    ensure_installed = "maintained",
+    ensure_installed = {
+        "bash",
+        "c",
+        "cmake",
+        "cpp",
+        "fish",
+        "json",
+        "make",
+        "markdown",
+        "qmljs",
+        "rust",
+        "toml",
+        "typescript",
+        "vala",
+        "vim",
+        "yaml"
+    },
     sync_install = false,
     highlight = {
         enable = true,
