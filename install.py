@@ -25,6 +25,7 @@ INSTALL_FILES = (
     '.config/fish/functions/compiledb_sailfish.fish',
     '.config/fish/functions/nemodeploy.fish',
     '.config/fish/functions/nemosetup.fish',
+    '.config/nvim/filetype.vim',
     '.config/nvim/init.vim',
     '.mersdkrc',
     '.mersdkuburc',
