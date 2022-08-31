@@ -29,6 +29,7 @@ INSTALL_FILES = (
     '.mersdkrc',
     '.mersdkuburc',
     '.sbrules',
+    '.scripts/avg-time',
     '.scripts/check-qml-ids',
     '.tmux.conf',
     '.vimrc',

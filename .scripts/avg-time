@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import argparse
+import datetime
+import re
+import sys
+from functools import reduce
+from typing import Dict, List
+
+TIME_RE = re.compile(r'(?P<min>\d+)m(?P<sec>\d+)\.(?P<msec>\d+)s')
+
+
+def parse_time(s: str) -> datetime.timedelta:
+    m = TIME_RE.match(s)
+    return datetime.timedelta(minutes=int(m.group('min')),
+                              seconds=int(m.group('sec')),
+                              milliseconds=int(m.group('msec')))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Calculate average values based on output from multiple "time" invocations.')
+    parser.add_argument('file', nargs='?',
+                        help='File to read time results from. Read from stdin if no file provided.')
+    args = parser.parse_args()
+
+    if args.file:
+        f = open(args.file)
+    else:
+        f = sys.stdin
+
+    results: Dict[str, List[datetime.timedelta]] = {}
+
+    while line := f.readline():
+        line = line.strip()
+
+        # Skip empty lines
+        if not line:
+            continue
+
+        name, time = line.split()
+        time = parse_time(time)
+
+        if name not in results:
+            results[name] = []
+
+        results[name].append(time)
+
+    for name, values in results.items():
+        t = reduce(lambda x, y: x + y, values) / len(values)
+        minutes = int(t.seconds / 60)
+        seconds = int(t.seconds % 60)
+        milliseconds = int(t.microseconds / 1000)
+        print(f'{name}\t{minutes}m{seconds}.{milliseconds:03d}s')
