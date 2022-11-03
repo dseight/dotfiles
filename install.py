@@ -16,6 +16,7 @@ INSTALL_FILES = (
     '.aliases',
     '.config/fish/conf.d/00-path-common.fish',
     '.config/fish/conf.d/00-path-darwin.fish',
+    '.config/fish/conf.d/50-env.fish',
     '.config/fish/conf.d/abbreviations-git.fish',
     '.config/fish/conf.d/abbreviations-other.fish',
     '.config/fish/conf.d/aliases.fish',
