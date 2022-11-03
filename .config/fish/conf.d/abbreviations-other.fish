@@ -1,12 +1,6 @@
 if status is-interactive
-    # Use just 'v' for opening vi-like editor, regardless which one is installed
-    if command -q nvim
-        abbr -a -g v nvim
-    else if command -q vim
-        abbr -a -g v vim
-    else
-        abbr -a -g v vi
-    end
+    # Use just 'v' for opening the editor
+    abbr -a -g v $EDITOR
 
     # Use as-tree when searching files with something like fd-find:
     # fd --extension rs | as-tree
