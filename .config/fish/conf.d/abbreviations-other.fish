@@ -7,4 +7,8 @@ if status is-interactive
     else
         abbr -a -g v vi
     end
+
+    # Use as-tree when searching files with something like fd-find:
+    # fd --extension rs | as-tree
+    abbr -a -g as-tree tree --fromfile .
 end
