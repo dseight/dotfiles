@@ -1,5 +1,7 @@
 " force cursor to stay in the middle line when possible
 set so=999
+" disable mouse
+set mouse=
 
 " Appearance "
 
