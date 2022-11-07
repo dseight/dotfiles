@@ -32,6 +32,7 @@ INSTALL_FILES = (
     '.sbrules',
     '.scripts/avg-time',
     '.scripts/check-qml-ids',
+    '.scripts/colors',
     '.tmux.conf',
     '.vimrc',
     '.zshrc',
