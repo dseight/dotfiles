@@ -46,7 +46,7 @@ function nemodeploy --description "Deploy packages to the Sailfish OS device"
 
     if set -q _flag_remote
         if string match -qr '\w+@\w+' $_flag_remote
-            set -l remote string split @ $_flag_remote
+            set -l remote (string split @ $_flag_remote)
             set user $remote[1]
             set host $remote[2]
         else
