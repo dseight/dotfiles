@@ -1,0 +1,12 @@
+# PaulMillrTweaked
+[colors]
+foreground = "#f5f5f5"
+background = "#000000"
+cursor_bg = "#c7c7c7"
+cursor_border = "#c7c7c7"
+cursor_fg = "#1a1a1a"
+selection_bg = "#c7c7c7"
+selection_fg = "#000000"
+
+ansi = ["#383838","#ff2600","#87fa0e","#ecc800","#4882df","#c365ca","#76d6ff","#c7c7c7"]
+brights = ["#797979","#ff2f63","#73fa79","#f6dc60","#82adf1","#e483eb","#8ae4f5","#ffffff"]
