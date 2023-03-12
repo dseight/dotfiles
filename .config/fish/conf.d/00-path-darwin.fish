@@ -1,4 +1,4 @@
-if status --is-interactive; and test (uname) = Darwin
+if status is-interactive; and test (uname) = Darwin
     set PATH $PATH \
         $HOME/Library/Android/sdk/platform-tools \
         $HOME/Library/Python/3.8/bin
