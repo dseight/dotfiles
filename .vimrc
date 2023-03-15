@@ -65,8 +65,10 @@ Plug 'itchyny/vim-gitbranch'
 Plug 'sheerun/vim-polyglot'
 Plug 'tmux-plugins/vim-tmux'
 Plug 'ackyshake/VimCompletesMe'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+if v:version >= 800
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+endif
 
 call plug#end()
 
