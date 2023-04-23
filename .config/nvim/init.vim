@@ -33,6 +33,13 @@ set tabstop=4
 nnoremap <SPACE> <Nop>
 let mapleader=" "
 
+" FzfLua bindings
+nnoremap <leader>/ <cmd>FzfLua<cr>
+nnoremap <leader>f <cmd>FzfLua files<cr>
+nnoremap <leader>g <cmd>FzfLua live_grep<cr>
+nnoremap <leader>c <cmd>FzfLua commands<cr>
+nnoremap <leader>j <cmd>FzfLua jumps<cr>
+
 " Plugins "
 
 " Install and run vim-plug on first run
@@ -49,7 +56,7 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 
 call plug#end()
 
