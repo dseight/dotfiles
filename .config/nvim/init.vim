@@ -7,6 +7,8 @@ set mouse=
 
 set number
 set relativenumber
+set listchars=tab:>\ ,trail:·,nbsp:~
+set list
 
 " Mode is provided by lightline, so disable built-in mode display
 set noshowmode
