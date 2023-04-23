@@ -63,8 +63,6 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'itchyny/lightline.vim'
 Plug 'itchyny/vim-gitbranch'
 Plug 'sheerun/vim-polyglot'
-Plug 'tmux-plugins/vim-tmux'
-Plug 'ackyshake/VimCompletesMe'
 if v:version >= 800
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'
