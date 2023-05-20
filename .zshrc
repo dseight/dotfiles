@@ -1,43 +1,69 @@
-# Oh My Zsh configuration
+#
+# Environment
+#
 
-export ZSH="$HOME/.oh-my-zsh"
-export TERM="xterm-256color"
-
-ZSH_THEME="fishy"
-
-# Disable marking untracked files under VCS as dirty. This makes repository
-# status check for large repositories much, much faster.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Extra plugins:
-# - https://github.com/zsh-users/zsh-autosuggestions
-# - https://github.com/zsh-users/zsh-syntax-highlighting
-plugins=(
-    git
-    tmux
-    colored-man-pages
-    zsh-autosuggestions
-    zsh-syntax-highlighting
+path+=(
+    "$HOME/go/bin"
+    "$HOME/.cargo/bin"
+    "$HOME/.scripts"
+    "$HOME/.local/bin"
 )
+if [[ $(uname) = "Darwin" ]]; then
+    path+=(
+        "$HOME/Library/Android/sdk/platform-tools"
+        "$HOME/Library/Python/3.8/bin"
+    )
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval $(/opt/homebrew/bin/brew shellenv)
+    fi
+fi
+export PATH
 
-source $ZSH/oh-my-zsh.sh
+# Allow ANSI "color" escape sequences and exit if entire file can be displayed
+# on the first screen
+export LESS=-RF
 
-# Common configuration
-
-export PATH="$PATH:$HOME/.local/bin"
-export EDITOR=vim
-
-# See https://gnunn1.github.io/tilix-web/manual/vteconfig/
-if [[ $TILIX_ID ]] || [[ $VTE_VERSION ]]; then
-    source /etc/profile.d/vte.sh
+# Prefer neovim with graceful fallback
+if which nvim 1>/dev/null 2>&1; then
+    export EDITOR=nvim
+elif which vim 1>/dev/null 2>&1; then
+    export EDITOR=vim
+else
+    export EDITOR=vi
 fi
 
-if [[ -f ~/.cargo/env ]]; then
-    source ~/.cargo/env
-fi
+#
+# Completions
+#
 
-if [[ "$(uname)" = "Darwin" ]]; then
-    export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
-fi
+# Enable completions
+autoload -Uz compinit && compinit
 
-source ~/.aliases
+# Do menu-driven completion.
+zstyle ':completion:*' menu select
+
+# Use ls colors for path completion
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+#
+# Prompt
+#
+
+# Load vcs info first
+autoload -Uz vcs_info
+
+# Color support, like "%{$fg[red]%}"
+autoload -Uz colors && colors
+
+# Update PS1 on each command invocation
+precmd() {
+    vcs_info
+    if [[ "${vcs_info_msg_0_}" == ' (git)-[tags/'* ]]; then
+        VCS_MSG=" ((${vcs_info_msg_0_:13:-2}))"
+    elif [[ "${vcs_info_msg_0_}" == ' (git)-['* ]]; then
+        VCS_MSG=" (${vcs_info_msg_0_:8:-2})"
+    else
+        VCS_MSG="${vcs_info_msg_0_}"
+    fi
+    PS1="%{$fg[green]%}%n%{$reset_color%}@%m %{$fg[green]%}%~%{$reset_color%}${VCS_MSG}> "
+}
