@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 
 import argparse
-from datetime import timedelta
+from datetime import datetime, timedelta
 import re
 import sys
 from collections import defaultdict
 from functools import reduce
 from typing import Dict, List
 
-TIME_RE = re.compile(r"(?P<min>\d+)m(?P<sec>\d+)\.(?P<msec>\d+)s")
+# bash:     0m0.010s
+# busybox:  0m 0.01s
+# posix:    0.01
+TIME_RE = re.compile(r"((?P<min>\d+)m\s?)?(?P<sec>\d+)\.(?P<msec>\d+)s?")
 
 
 def parse_time(s: str) -> timedelta:
     m = TIME_RE.match(s)
     return timedelta(
-        minutes=int(m["min"]),
+        minutes=int(m["min"] or 0),
         seconds=int(m["sec"]),
-        milliseconds=int(m["msec"]),
+        microseconds=datetime.strptime(m["msec"], "%f").microsecond,
     )
 
 
@@ -42,7 +45,7 @@ if __name__ == "__main__":
         if not line:
             continue
 
-        name, time = line.split()
+        name, time = line.split(maxsplit=1)
         time = parse_time(time)
 
         results[name].append(time)
