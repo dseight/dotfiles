@@ -7,21 +7,27 @@ import sys
 from functools import reduce
 from typing import Dict, List
 
-TIME_RE = re.compile(r'(?P<min>\d+)m(?P<sec>\d+)\.(?P<msec>\d+)s')
+TIME_RE = re.compile(r"(?P<min>\d+)m(?P<sec>\d+)\.(?P<msec>\d+)s")
 
 
 def parse_time(s: str) -> datetime.timedelta:
     m = TIME_RE.match(s)
-    return datetime.timedelta(minutes=int(m.group('min')),
-                              seconds=int(m.group('sec')),
-                              milliseconds=int(m.group('msec')))
+    return datetime.timedelta(
+        minutes=int(m.group("min")),
+        seconds=int(m.group("sec")),
+        milliseconds=int(m.group("msec")),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Calculate average values based on output from multiple "time" invocations.')
-    parser.add_argument('file', nargs='?',
-                        help='File to read time results from. Read from stdin if no file provided.')
+        description='Calculate average values based on output from multiple "time" invocations.'
+    )
+    parser.add_argument(
+        "file",
+        nargs="?",
+        help="File to read time results from. Read from stdin if no file provided.",
+    )
     args = parser.parse_args()
 
     if args.file:
@@ -51,4 +57,4 @@ if __name__ == '__main__':
         minutes = int(t.seconds / 60)
         seconds = int(t.seconds % 60)
         milliseconds = int(t.microseconds / 1000)
-        print(f'{name}\t{minutes}m{seconds}.{milliseconds:03d}s')
+        print(f"{name}\t{minutes}m{seconds}.{milliseconds:03d}s")

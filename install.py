@@ -13,36 +13,36 @@ from pathlib import Path
 from typing import Iterable, Set
 
 INSTALL_FILES = (
-    '.aliases',
-    '.config/fish/conf.d/00-path-common.fish',
-    '.config/fish/conf.d/00-path-darwin.fish',
-    '.config/fish/conf.d/50-env.fish',
-    '.config/fish/conf.d/abbreviations-git.fish',
-    '.config/fish/conf.d/abbreviations-other.fish',
-    '.config/fish/conf.d/aliases.fish',
-    '.config/fish/conf.d/toolbox-prompt-color.fish',
-    '.config/fish/config.fish',
-    '.config/fish/functions/compiledb_sailfish.fish',
-    '.config/fish/functions/nemodeploy.fish',
-    '.config/fish/functions/nemosetup.fish',
-    '.config/nvim/filetype.vim',
-    '.config/nvim/init.vim',
-    '.mersdkrc',
-    '.mersdkuburc',
-    '.sbrules',
-    '.scripts/avg-time',
-    '.scripts/check-qml-ids',
-    '.scripts/colors',
-    '.tmux.conf',
-    '.vimrc',
-    '.zshrc',
+    ".aliases",
+    ".config/fish/conf.d/00-path-common.fish",
+    ".config/fish/conf.d/00-path-darwin.fish",
+    ".config/fish/conf.d/50-env.fish",
+    ".config/fish/conf.d/abbreviations-git.fish",
+    ".config/fish/conf.d/abbreviations-other.fish",
+    ".config/fish/conf.d/aliases.fish",
+    ".config/fish/conf.d/toolbox-prompt-color.fish",
+    ".config/fish/config.fish",
+    ".config/fish/functions/compiledb_sailfish.fish",
+    ".config/fish/functions/nemodeploy.fish",
+    ".config/fish/functions/nemosetup.fish",
+    ".config/nvim/filetype.vim",
+    ".config/nvim/init.vim",
+    ".mersdkrc",
+    ".mersdkuburc",
+    ".sbrules",
+    ".scripts/avg-time",
+    ".scripts/check-qml-ids",
+    ".scripts/colors",
+    ".tmux.conf",
+    ".vimrc",
+    ".zshrc",
 )
 
-CL_RESET = '\033[m'
-CL_RED = '\033[31m'
-CL_GREEN = '\033[32m'
-CL_CYAN = '\033[36m'
-CL_FAINT_DEFAULT = '\033[2;39m'
+CL_RESET = "\033[m"
+CL_RED = "\033[31m"
+CL_GREEN = "\033[32m"
+CL_CYAN = "\033[36m"
+CL_FAINT_DEFAULT = "\033[2;39m"
 
 use_color = sys.stdout.isatty()
 
@@ -53,13 +53,13 @@ def colorize(s: str, color: str) -> str:
 
 def color_diff(diff):
     for line in diff:
-        if line.startswith('---') or line.startswith('+++'):
+        if line.startswith("---") or line.startswith("+++"):
             yield colorize(line, CL_FAINT_DEFAULT)
-        elif line.startswith('+'):
+        elif line.startswith("+"):
             yield colorize(line, CL_GREEN)
-        elif line.startswith('-'):
+        elif line.startswith("-"):
             yield colorize(line, CL_RED)
-        elif line.startswith('@@'):
+        elif line.startswith("@@"):
             yield colorize(line, CL_CYAN)
         else:
             yield line
@@ -71,24 +71,23 @@ def get_git_revision() -> str:
     weird reason, just read file directly without executing git.
     """
     cwd = Path.cwd()
-    head = cwd / '.git/HEAD'
+    head = cwd / ".git/HEAD"
 
     if not head.exists():
-        return 'unknown'
+        return "unknown"
 
     with open(head) as f:
         revision = f.readline().strip()
 
-    if revision.startswith('ref: '):
+    if revision.startswith("ref: "):
         ref = revision[5:]
-        with open(cwd / '.git' / ref) as f:
+        with open(cwd / ".git" / ref) as f:
             revision = f.readline().strip()
 
     return revision
 
 
 class DotfilesConfig:
-
     # If config format needs to be changed, version *must* be bumped,
     # and migrations have to be written
     _VERSION = 1
@@ -102,7 +101,7 @@ class DotfilesConfig:
 
         with open(self._path) as f:
             content = json.load(f)
-            self._installed = set(content['installed'])
+            self._installed = set(content["installed"])
 
     def installed(self) -> Set[str]:
         return self._installed
@@ -115,17 +114,16 @@ class DotfilesConfig:
 
     def save(self):
         content = {
-            'version': self._VERSION,
-            'revision': get_git_revision(),
-            'installed': list(sorted(self._installed)),
+            "version": self._VERSION,
+            "revision": get_git_revision(),
+            "installed": list(sorted(self._installed)),
         }
 
-        with open(self._path, 'w') as f:
+        with open(self._path, "w") as f:
             json.dump(content, f, indent=4)
 
 
 class _InstallationEntry:
-
     def __init__(self, name: str, src: str, dst: Path):
         # Name of file relative to the install path
         self.name = name
@@ -140,7 +138,6 @@ class InstallerNotOnTTYException(Exception):
 
 
 class Installer:
-
     def __init__(self, install_root: Path, config: DotfilesConfig):
         self._install_root = install_root
         self._config = config
@@ -150,7 +147,7 @@ class Installer:
         self._changed: Iterable[_InstallationEntry] = []
         self._removed: Iterable[str] = []
 
-    def add(self, files: Iterable[str], base: str = ''):
+    def add(self, files: Iterable[str], base: str = ""):
         """
         Add list of files to install.
 
@@ -187,27 +184,24 @@ class Installer:
 
         names_to_install = set(map(lambda e: e.name, self._entries))
 
-        self._removed = list(filter(
-            lambda f: f not in names_to_install, self._config.installed()))
+        self._removed = list(
+            filter(lambda f: f not in names_to_install, self._config.installed())
+        )
 
     def _print_changes_summary(self):
         if self._new:
-            pretty_new = map(lambda e: '\n\t' +
-                             colorize(e.name, CL_GREEN), self._new)
-            print('New files:',
-                  ''.join(pretty_new), end='\n\n')
+            pretty_new = map(lambda e: "\n\t" + colorize(e.name, CL_GREEN), self._new)
+            print("New files:", "".join(pretty_new), end="\n\n")
 
         if self._changed:
-            pretty_changed = map(lambda e: '\n\t' +
-                                 colorize(e.name, CL_RED), self._changed)
-            print('Modified files:',
-                  ''.join(pretty_changed), end='\n\n')
+            pretty_changed = map(
+                lambda e: "\n\t" + colorize(e.name, CL_RED), self._changed
+            )
+            print("Modified files:", "".join(pretty_changed), end="\n\n")
 
         if self._removed:
-            pretty_removed = map(lambda x: '\n\t' +
-                                 colorize(x, CL_RED), self._removed)
-            print('Removed files:',
-                  ''.join(pretty_removed), end='\n\n')
+            pretty_removed = map(lambda x: "\n\t" + colorize(x, CL_RED), self._removed)
+            print("Removed files:", "".join(pretty_removed), end="\n\n")
 
         if not sys.stdout.isatty():
             raise InstallerNotOnTTYException()
@@ -220,8 +214,7 @@ class Installer:
         with open(dst) as f:
             dst_lines = f.readlines()
 
-        diff = unified_diff(dst_lines, src_lines,
-                            fromfile=str(dst), tofile=str(src))
+        diff = unified_diff(dst_lines, src_lines, fromfile=str(dst), tofile=str(src))
         diff = color_diff(diff)
 
         sys.stdout.writelines(diff)
@@ -239,12 +232,12 @@ class Installer:
     def _interactive_install_file(self, src, dst):
         self._print_file_diff(src, dst)
 
-        query = input('\nApply changes (y/N)? ')
-        if query.lower() != 'y':
+        query = input("\nApply changes (y/N)? ")
+        if query.lower() != "y":
             return
 
         self._install_file(src, dst)
-        print('Changes applied for', dst)
+        print("Changes applied for", dst)
 
     def _install_file(self, src: Path, dst: Path):
         dst.parent.mkdir(0o755, parents=True, exist_ok=True)
@@ -257,23 +250,29 @@ class Installer:
         self._config.remove(src)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Install or update dotfiles.')
-    parser.add_argument('-y', '--non-interactive', action='store_true',
-                        help='install files in non-interactive mode')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Install or update dotfiles.")
+    parser.add_argument(
+        "-y",
+        "--non-interactive",
+        action="store_true",
+        help="install files in non-interactive mode",
+    )
     args = parser.parse_args()
 
     home = Path.home()
-    config = DotfilesConfig(home / '.dotfiles')
+    config = DotfilesConfig(home / ".dotfiles")
     installer = Installer(home, config)
     installer.add(INSTALL_FILES)
 
     try:
         installer.install(not args.non_interactive)
     except InstallerNotOnTTYException:
-        print('Cannot run interactive install while not at TTY. ' +
-              'Please review the changes manually and run again ' +
-              'with -y/--non-interactive.')
+        print(
+            "Cannot run interactive install while not at TTY. "
+            + "Please review the changes manually and run again "
+            + "with -y/--non-interactive."
+        )
         sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(0)

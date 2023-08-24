@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Iterable, List
 
-ID_RE = re.compile(r'\s*id:\s*(\w+)\s*')
+ID_RE = re.compile(r"\s*id:\s*(\w+)\s*")
 
 
 def check_qml(path):
@@ -21,9 +21,8 @@ def check_qml(path):
             qml_ids[match.group(1)] = line_no
 
     for qml_id, line_no in qml_ids.items():
-        usage_re = re.compile(r'[^.]\b' + re.escape(qml_id) + r'\b')
-        used_lines = filter(lambda v: usage_re.search(
-            v[1]), enumerate(lines, 1))
+        usage_re = re.compile(r"[^.]\b" + re.escape(qml_id) + r"\b")
+        used_lines = filter(lambda v: usage_re.search(v[1]), enumerate(lines, 1))
         used_lines_count = len(list(used_lines))
 
         if used_lines_count == 1:
@@ -31,8 +30,8 @@ def check_qml(path):
 
 
 def get_changed_files() -> Iterable[str]:
-    changes = subprocess.check_output(['git', 'ls-files', '-mo'])
-    lines = changes.decode('utf-8').splitlines()
+    changes = subprocess.check_output(["git", "ls-files", "-mo"])
+    lines = changes.decode("utf-8").splitlines()
     return filter(lambda s: s.endswith(".qml"), lines)
 
 
@@ -41,21 +40,28 @@ def expand_paths(paths: Iterable[str]) -> List[Path]:
 
     for path in paths:
         if Path(path).is_dir():
-            result += list(Path(path).glob('**/*.qml'))
+            result += list(Path(path).glob("**/*.qml"))
         else:
             result.append(Path(path))
 
     return result
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Check QML files for unused ids')
-    parser.add_argument('-c', '--changed', action='store_true',
-                        help='Check only changed files in cwd (under git)')
-    parser.add_argument('-r', '--recursive', action='store_true',
-                        help='Run recursively on provided paths')
-    parser.add_argument('path', nargs='*')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Check QML files for unused ids")
+    parser.add_argument(
+        "-c",
+        "--changed",
+        action="store_true",
+        help="Check only changed files in cwd (under git)",
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="Run recursively on provided paths",
+    )
+    parser.add_argument("path", nargs="*")
     args = parser.parse_args()
 
     if args.changed:
@@ -71,5 +77,6 @@ if __name__ == '__main__':
         except IsADirectoryError:
             print(
                 f'Error: "{path}" is a directory, use "-r" to run recursively',
-                file=sys.stderr)
+                file=sys.stderr,
+            )
             sys.exit(1)
