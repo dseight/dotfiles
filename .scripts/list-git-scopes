@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ "$1" = "-h" ] || [ "$1" == "--help" ]; then
+    echo "Usage: $0 [-h] [OPTIONS]"
+    echo
+    echo "List all scopes from the git log from the least frequent to the most"
+    echo "frequent. Scope is the prefix like 'arm64:'."
+    echo
+    echo "  OPTIONS       extra options for the 'git log' command (e.g. file path)"
+    echo "  -h, --help    print this help an exit"
+    exit 0
+fi
+
+git log --oneline $@ | cut -f2 -d' ' | grep -E ':$' | sort | uniq -c | sort
