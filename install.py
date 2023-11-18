@@ -28,6 +28,7 @@ INSTALL_FILES = (
     ".config/nvim/filetype.vim",
     ".config/nvim/init.vim",
     ".config/wezterm/colors/PaulMillrTweaked.toml",
+    ".config/wezterm/wezterm.lua",
     ".mersdkrc",
     ".mersdkuburc",
     ".sbrules",
