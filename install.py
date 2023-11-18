@@ -27,6 +27,7 @@ INSTALL_FILES = (
     ".config/fish/functions/nemosetup.fish",
     ".config/nvim/filetype.vim",
     ".config/nvim/init.vim",
+    ".config/wezterm/colors/PaulMillrTweaked.toml",
     ".mersdkrc",
     ".mersdkuburc",
     ".sbrules",
