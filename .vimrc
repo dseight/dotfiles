@@ -56,6 +56,9 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" Prevent sleuth.vim from slowing down the startup time
+let g:polyglot_disabled = ['autoindent']
+
 call plug#begin(data_dir . '/plugged')
 
 Plug 'airblade/vim-gitgutter'
