@@ -27,19 +27,6 @@ set expandtab
 set shiftwidth=4
 set tabstop=4
 
-" Bindings "
-
-" Use space as <leader> key
-nnoremap <SPACE> <Nop>
-let mapleader=" "
-
-" FzfLua bindings
-nnoremap <leader>/ <cmd>FzfLua<cr>
-nnoremap <leader>f <cmd>FzfLua files<cr>
-nnoremap <leader>g <cmd>FzfLua live_grep<cr>
-nnoremap <leader>c <cmd>FzfLua commands<cr>
-nnoremap <leader>j <cmd>FzfLua jumps<cr>
-
 " Plugins "
 
 " Install and run vim-plug on first run
@@ -57,8 +44,27 @@ Plug 'nvim-lualine/lualine.nvim', { 'commit': '0a5a66803c7407767b799067986b4dc30
 Plug 'nvim-treesitter/nvim-treesitter', { 'commit': 'a2d6678bb21052013d0dd7cb35dffbac13846c98', 'do': ':TSUpdate' }
 " NOTE: fzf binary must be installed separately
 Plug 'ibhagwan/fzf-lua', { 'commit': '97a88bb8b0785086d03e08a7f98f83998e0e1f8a', 'branch': 'main' }
+Plug 'folke/which-key.nvim', { 'commit': '4433e5ec9a507e5097571ed55c02ea9658fb268a' }
 
 call plug#end()
+
+" Bindings "
+
+" Use space as <leader> key
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+let g:mapleader = "\<Space>"
+
+" By default timeoutlen is 1000 ms
+set timeoutlen=250
+
+" FzfLua bindings
+nnoremap <leader><Space> <cmd>FzfLua<cr>
+nnoremap <leader>b <cmd>FzfLua buffers<cr>
+nnoremap <leader>f <cmd>FzfLua files<cr>
+nnoremap <leader>g <cmd>FzfLua live_grep_glob<cr>
+nnoremap <leader>c <cmd>FzfLua commands<cr>
+nnoremap <leader>j <cmd>FzfLua jumps<cr>
 
 " Match color of gitgutter with line numbers background
 highlight! link SignColumn LineNr
@@ -105,4 +111,6 @@ require'nvim-treesitter.configs'.setup {
         additional_vim_regex_highlighting = false,
     },
 }
+
+require("which-key").setup {}
 END
