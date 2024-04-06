@@ -55,7 +55,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" NOTE: fzf binary must be installed separately
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 
 call plug#end()

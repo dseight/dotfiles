@@ -67,7 +67,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'itchyny/vim-gitbranch'
 Plug 'sheerun/vim-polyglot'
 if v:version >= 800
-    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    " NOTE: fzf binary must be installed separately
     Plug 'junegunn/fzf.vim'
 endif
 
