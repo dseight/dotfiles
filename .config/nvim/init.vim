@@ -51,12 +51,12 @@ endif
 
 call plug#begin(data_dir . '/plugged')
 
-Plug 'airblade/vim-gitgutter'
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'airblade/vim-gitgutter', { 'commit': '67ef116100b40f9ca128196504a2e0bc0a2753b0' }
+Plug 'ntpeters/vim-better-whitespace', { 'commit': '029f35c783f1b504f9be086b9ea757a36059c846' }
+Plug 'nvim-lualine/lualine.nvim', { 'commit': '0a5a66803c7407767b799067986b4dc3036e1983' }
+Plug 'nvim-treesitter/nvim-treesitter', { 'commit': 'a2d6678bb21052013d0dd7cb35dffbac13846c98', 'do': ':TSUpdate' }
 " NOTE: fzf binary must be installed separately
-Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
+Plug 'ibhagwan/fzf-lua', { 'commit': '97a88bb8b0785086d03e08a7f98f83998e0e1f8a', 'branch': 'main' }
 
 call plug#end()
 

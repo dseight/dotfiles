@@ -61,14 +61,14 @@ let g:polyglot_disabled = ['autoindent']
 
 call plug#begin(data_dir . '/plugged')
 
-Plug 'airblade/vim-gitgutter'
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'itchyny/lightline.vim'
-Plug 'itchyny/vim-gitbranch'
-Plug 'sheerun/vim-polyglot'
+Plug 'airblade/vim-gitgutter', { 'commit': '67ef116100b40f9ca128196504a2e0bc0a2753b0' }
+Plug 'ntpeters/vim-better-whitespace', { 'commit': '029f35c783f1b504f9be086b9ea757a36059c846' }
+Plug 'itchyny/lightline.vim', { 'commit': '58c97bc21c6f657d3babdd4eefce7593e30e75ce' }
+Plug 'itchyny/vim-gitbranch', { 'commit': '1a8ba866f3eaf0194783b9f8573339d6ede8f1ed' }
+Plug 'sheerun/vim-polyglot', { 'commit': 'bc8a81d3592dab86334f27d1d43c080ebf680d42' }
 if v:version >= 800
     " NOTE: fzf binary must be installed separately
-    Plug 'junegunn/fzf.vim'
+    Plug 'junegunn/fzf.vim', { 'commit': '45d96c9cb1213204479593236dfabf911ff15443' }
 endif
 
 call plug#end()
