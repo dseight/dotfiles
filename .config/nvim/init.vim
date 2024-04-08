@@ -3,27 +3,9 @@ set so=999
 " disable mouse
 set mouse=
 
-" Appearance "
-
-set number
-set relativenumber
-set listchars=tab:>\ ,trail:·,nbsp:~
-set list
-
-" Mode is provided by lightline, so disable built-in mode display
-set noshowmode
-
-hi LineNr ctermfg=gray
-hi VertSplit cterm=NONE ctermfg=darkgray ctermbg=NONE
-
-if !has('gui_running')
-    set t_Co=256
-endif
-
 " File behaviour "
 
 set expandtab
-
 set shiftwidth=4
 set tabstop=4
 
@@ -45,8 +27,28 @@ Plug 'nvim-treesitter/nvim-treesitter', { 'commit': 'a2d6678bb21052013d0dd7cb35d
 " NOTE: fzf binary must be installed separately
 Plug 'ibhagwan/fzf-lua', { 'commit': '97a88bb8b0785086d03e08a7f98f83998e0e1f8a', 'branch': 'main' }
 Plug 'folke/which-key.nvim', { 'commit': '4433e5ec9a507e5097571ed55c02ea9658fb268a' }
+Plug 'miikanissi/modus-themes.nvim', { 'commit': '7cef53b10b6964a0be483fa27a3d66069cefaa6c' }
 
 call plug#end()
+
+" Appearance "
+
+set termguicolors
+
+lua << END
+require("modus-themes").setup({
+    on_highlights = function(highlights, colors)
+        highlights.LineNr = { fg = colors.fg_dim, bg = colors.bg_main }
+    end,
+})
+END
+
+colorscheme modus
+set number
+set relativenumber
+set listchars=tab:>\ ,trail:·,nbsp:~
+set list
+set noshowmode " provided by lightline
 
 " Bindings "
 
@@ -66,19 +68,10 @@ nnoremap <leader>g <cmd>FzfLua live_grep_glob<cr>
 nnoremap <leader>c <cmd>FzfLua commands<cr>
 nnoremap <leader>j <cmd>FzfLua jumps<cr>
 
-" Match color of gitgutter with line numbers background
-highlight! link SignColumn LineNr
-
-highlight GitGutterAdd ctermfg=green ctermbg=NONE
-highlight GitGutterChange ctermfg=yellow ctermbg=NONE
-highlight GitGutterDelete ctermfg=red ctermbg=NONE
-highlight GitGutterChangeDelete ctermfg=yellow ctermbg=NONE
-
 lua << END
 require'lualine'.setup {
     options = {
         icons_enabled = false,
-        theme = 'iceberg_dark',
         section_separators = '',
         component_separators = '|',
     },
