@@ -76,7 +76,7 @@ nnoremap <leader>c <cmd>FzfLua commands<cr>
 nnoremap <leader>j <cmd>FzfLua jumps<cr>
 
 lua << END
-require'lualine'.setup {
+require("lualine").setup {
     options = {
         icons_enabled = false,
         section_separators = '',
@@ -84,10 +84,10 @@ require'lualine'.setup {
     },
     sections = {
         lualine_x = {'encoding', 'fileformat'},
-    }
+    },
 }
 
-require'nvim-treesitter.configs'.setup {
+require("nvim-treesitter.configs").setup {
     ensure_installed = {
         "bash",
         "c",
@@ -103,7 +103,7 @@ require'nvim-treesitter.configs'.setup {
         "typescript",
         "vala",
         "vim",
-        "yaml"
+        "yaml",
     },
     sync_install = false,
     highlight = {
