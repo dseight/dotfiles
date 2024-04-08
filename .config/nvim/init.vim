@@ -67,13 +67,18 @@ let g:mapleader = "\<Space>"
 " By default timeoutlen is 1000 ms
 set timeoutlen=250
 
-" FzfLua bindings
 nnoremap <leader><Space> <cmd>FzfLua<cr>
-nnoremap <leader>b <cmd>FzfLua buffers<cr>
+nnoremap <leader>/ <cmd>FzfLua live_grep_glob<cr>
 nnoremap <leader>f <cmd>FzfLua files<cr>
-nnoremap <leader>g <cmd>FzfLua live_grep_glob<cr>
-nnoremap <leader>c <cmd>FzfLua commands<cr>
+nnoremap <leader>t <cmd>FzfLua tagstack<cr>
+nnoremap <leader>b <cmd>FzfLua buffers<cr>
 nnoremap <leader>j <cmd>FzfLua jumps<cr>
+nnoremap <leader>gn <cmd>Gitsigns next_hunk<cr>
+nnoremap <leader>gp <cmd>Gitsigns prev_hunk<cr>
+nnoremap <leader>ga <cmd>Gitsigns stage_hunk<cr>
+nnoremap <leader>gu <cmd>Gitsigns undo_stage_hunk<cr>
+nnoremap <leader>gv <cmd>Gitsigns preview_hunk<cr>
+nnoremap <leader>gb <cmd>Gitsigns blame_line<cr>
 
 lua << END
 require("lualine").setup {
