@@ -20,7 +20,7 @@ endif
 
 call plug#begin(data_dir . '/plugged')
 
-Plug 'airblade/vim-gitgutter', { 'commit': '67ef116100b40f9ca128196504a2e0bc0a2753b0' }
+Plug 'lewis6991/gitsigns.nvim', { 'commit': '6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2' }
 Plug 'ntpeters/vim-better-whitespace', { 'commit': '029f35c783f1b504f9be086b9ea757a36059c846' }
 Plug 'nvim-lualine/lualine.nvim', { 'commit': '0a5a66803c7407767b799067986b4dc3036e1983' }
 Plug 'nvim-treesitter/nvim-treesitter', { 'commit': 'a2d6678bb21052013d0dd7cb35dffbac13846c98', 'do': ':TSUpdate' }
@@ -37,6 +37,13 @@ set termguicolors
 
 lua << END
 require("modus-themes").setup({
+    on_colors = function(colors)
+        -- Don't highlight background of git gutter. This also affects
+        -- :Gitsigns preview_hunk, thus bg is set to none instead of bg_main
+        colors.bg_added = colors.none
+        colors.bg_changed = colors.none
+        colors.bg_removed = colors.none
+    end,
     on_highlights = function(highlights, colors)
         highlights.LineNr = { fg = colors.fg_dim, bg = colors.bg_main }
     end,
@@ -106,4 +113,14 @@ require'nvim-treesitter.configs'.setup {
 }
 
 require("which-key").setup {}
+
+require("gitsigns").setup {
+    signs = {
+        add = { text = "+" },
+        change = { text = "~" },
+        delete = { text = "-" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
+    },
+}
 END
