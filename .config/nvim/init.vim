@@ -43,9 +43,12 @@ require("modus-themes").setup({
         colors.bg_added = colors.none
         colors.bg_changed = colors.none
         colors.bg_removed = colors.none
+        -- Make status line less pronounced
+        colors.bg_status_line_active = colors.bg_dim
     end,
     on_highlights = function(highlights, colors)
         highlights.LineNr = { fg = colors.fg_dim, bg = colors.bg_main }
+        highlights.WhichKeyFloat = { bg = colors.bg_dim }
     end,
 })
 END
