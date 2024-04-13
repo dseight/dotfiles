@@ -10,7 +10,7 @@ import shutil
 import sys
 from difflib import unified_diff
 from pathlib import Path
-from typing import Iterable, Set
+from typing import Iterable, List, Set
 
 INSTALL_FILES = (
     ".aliases",
@@ -144,10 +144,10 @@ class Installer:
         self._install_root = install_root
         self._config = config
 
-        self._entries: Iterable[_InstallationEntry] = []
-        self._new: Iterable[_InstallationEntry] = []
-        self._changed: Iterable[_InstallationEntry] = []
-        self._removed: Iterable[str] = []
+        self._entries: List[_InstallationEntry] = []
+        self._new: List[_InstallationEntry] = []
+        self._changed: List[_InstallationEntry] = []
+        self._removed: List[str] = []
 
     def add(self, files: Iterable[str], base: str = ""):
         """
