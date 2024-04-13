@@ -154,7 +154,7 @@ class Installer:
         Add list of files to install.
 
         :param files: list of files to install
-        :param base: base directory where files these files are located
+        :param base: base directory where these files are located
         """
         for f in files:
             entry = _InstallationEntry(f, base + f, self._install_root / f)
