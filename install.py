@@ -164,6 +164,8 @@ class Installer:
         self._collect_changes()
 
         if interactive:
+            if not sys.stdout.isatty():
+                raise InstallerNotOnTTYException()
             self._print_changes_summary()
             self._install(self._interactive_install_file)
         else:
@@ -204,9 +206,6 @@ class Installer:
         if self._removed:
             pretty_removed = map(lambda x: "\n\t" + colorize(x, CL_RED), self._removed)
             print("Removed files:", "".join(pretty_removed), end="\n\n")
-
-        if not sys.stdout.isatty():
-            raise InstallerNotOnTTYException()
 
     @staticmethod
     def _print_file_diff(src, dst):
