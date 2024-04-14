@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: 2022 Dmitry Gerasimov <di.gerasimov@gmail.com>
+# SPDX-FileCopyrightText: 2022-2024 Dmitry Gerasimov <di.gerasimov@gmail.com>
 # SPDX-License-Identifier: MIT
 
 import argparse
@@ -89,6 +89,51 @@ def get_git_revision() -> str:
     return revision
 
 
+class InstallationObject:
+    def __init__(self, dst_rel: Path, root: Path):
+        # Relative installation path
+        self.dst_rel = dst_rel
+        # Full installation path
+        self.dst = root / dst_rel
+
+    def changed(self) -> bool:
+        raise NotImplementedError
+
+    def print_diff(self):
+        raise NotImplementedError
+
+    def install(self):
+        raise NotImplementedError
+
+
+class File(InstallationObject):
+    def __init__(self, src: Path, dst_rel: Path, root: Path):
+        super().__init__(dst_rel, root)
+        # Full path to the source
+        self.src = src
+
+    def changed(self) -> bool:
+        return not filecmp.cmp(self.src, self.dst)
+
+    def print_diff(self):
+        with open(self.src) as f:
+            src_lines = f.readlines()
+
+        with open(self.dst) as f:
+            dst_lines = f.readlines()
+
+        diff = unified_diff(
+            dst_lines, src_lines, fromfile=str(self.dst), tofile=str(self.src)
+        )
+        diff = color_diff(diff)
+
+        sys.stdout.writelines(diff)
+
+    def install(self):
+        self.dst.parent.mkdir(0o755, parents=True, exist_ok=True)
+        shutil.copy(self.src, self.dst)
+
+
 class DotfilesConfig:
     # If config format needs to be changed, version *must* be bumped,
     # and migrations have to be written
@@ -103,40 +148,29 @@ class DotfilesConfig:
 
         with open(self._path) as f:
             content = json.load(f)
-            self._installed = set(content["installed"])
+            self._installed = set(map(Path, content["installed"]))
 
-    def installed(self) -> Set[str]:
+    def installed(self) -> Set[Path]:
         return self._installed
 
-    def add(self, path: str):
+    def add(self, path: Path):
         self._installed.add(path)
 
-    def remove(self, path: str):
+    def remove(self, path: Path):
         self._installed.remove(path)
 
     def save(self):
         content = {
             "version": self._VERSION,
             "revision": get_git_revision(),
-            "installed": list(sorted(self._installed)),
+            "installed": list(sorted(map(str, self._installed))),
         }
 
         with open(self._path, "w") as f:
             json.dump(content, f, indent=4)
 
 
-class _InstallationEntry:
-    def __init__(self, name: str, src: str, dst: Path):
-        # Name of file relative to the install path
-        self.name = name
-        # Actual file location to copy from
-        self.src = src
-        # Full path to the file install location
-        self.dst = dst
-
-
-class InstallerNotOnTTYException(Exception):
-    ...
+class InstallerNotOnTTYException(Exception): ...
 
 
 class Installer:
@@ -144,12 +178,12 @@ class Installer:
         self._install_root = install_root
         self._config = config
 
-        self._entries: List[_InstallationEntry] = []
-        self._new: List[_InstallationEntry] = []
-        self._changed: List[_InstallationEntry] = []
-        self._removed: List[str] = []
+        self._objects: List[InstallationObject] = []
+        self._new: List[InstallationObject] = []
+        self._changed: List[InstallationObject] = []
+        self._removed: List[Path] = []
 
-    def add(self, files: Iterable[str], base: str = ""):
+    def add_files(self, files: Iterable[str], base: str = ""):
         """
         Add list of files to install.
 
@@ -157,8 +191,8 @@ class Installer:
         :param base: base directory where these files are located
         """
         for f in files:
-            entry = _InstallationEntry(f, base + f, self._install_root / f)
-            self._entries.append(entry)
+            o = File(Path(base + f), Path(f), self._install_root)
+            self._objects.append(o)
 
     def install(self, interactive: bool):
         self._collect_changes()
@@ -166,89 +200,79 @@ class Installer:
         if interactive:
             if not sys.stdout.isatty():
                 raise InstallerNotOnTTYException()
-            self._print_changes_summary()
-            self._install(self._interactive_install_file)
+            self._print_changes()
+            self._apply_changes(self._interactive_install)
         else:
-            self._install(self._install_file)
+            self._apply_changes(self._install)
 
         self._config.save()
 
     def _collect_changes(self):
-        for e in self._entries:
-            if not e.dst.exists():
-                self._new.append(e)
-            elif e.name not in self._config.installed():
-                print(f'Warning: "{e.name}" already installed but untracked')
-                if filecmp.cmp(e.src, e.dst):
-                    self._new.append(e)
+        for o in self._objects:
+            if not o.dst.exists():
+                self._new.append(o)
+            elif o.dst_rel not in self._config.installed():
+                print(f'Warning: "{o.dst_rel}" already installed but untracked')
+                if o.changed():
+                    self._changed.append(o)
                 else:
-                    self._changed.append(e)
-            elif not filecmp.cmp(e.src, e.dst):
-                self._changed.append(e)
+                    self._new.append(o)
+            elif o.changed():
+                self._changed.append(o)
 
-        names_to_install = set(map(lambda e: e.name, self._entries))
+        to_install = set(map(lambda o: o.dst_rel, self._objects))
 
         self._removed = list(
-            filter(lambda f: f not in names_to_install, self._config.installed())
+            filter(lambda f: f not in to_install, self._config.installed())
         )
 
-    def _print_changes_summary(self):
+    def _print_changes(self):
         if self._new:
-            pretty_new = map(lambda e: "\n\t" + colorize(e.name, CL_GREEN), self._new)
-            print("New files:", "".join(pretty_new), end="\n\n")
+            pretty_new = map(
+                lambda o: "\n\t" + colorize(str(o.dst_rel), CL_GREEN), self._new
+            )
+            print("New:", "".join(pretty_new), end="\n\n")
 
         if self._changed:
             pretty_changed = map(
-                lambda e: "\n\t" + colorize(e.name, CL_RED), self._changed
+                lambda o: "\n\t" + colorize(str(o.dst_rel), CL_RED), self._changed
             )
-            print("Modified files:", "".join(pretty_changed), end="\n\n")
+            print("Modified:", "".join(pretty_changed), end="\n\n")
 
         if self._removed:
-            pretty_removed = map(lambda x: "\n\t" + colorize(x, CL_RED), self._removed)
-            print("Removed files:", "".join(pretty_removed), end="\n\n")
+            pretty_removed = map(
+                lambda path: "\n\t" + colorize(str(path), CL_RED), self._removed
+            )
+            print("Removed:", "".join(pretty_removed), end="\n\n")
 
-    @staticmethod
-    def _print_file_diff(src, dst):
-        with open(src) as f:
-            src_lines = f.readlines()
+    def _apply_changes(self, install_changed):
+        for o in self._new:
+            self._install(o)
 
-        with open(dst) as f:
-            dst_lines = f.readlines()
+        for o in self._changed:
+            install_changed(o)
 
-        diff = unified_diff(dst_lines, src_lines, fromfile=str(dst), tofile=str(src))
-        diff = color_diff(diff)
+        for path in self._removed:
+            self._remove(path)
 
-        sys.stdout.writelines(diff)
-
-    def _install(self, install_changed_file):
-        for e in self._new:
-            self._install_file(e.src, e.dst)
-
-        for e in self._changed:
-            install_changed_file(e.src, e.dst)
-
-        for src in self._removed:
-            self._remove_file(src)
-
-    def _interactive_install_file(self, src, dst):
-        self._print_file_diff(src, dst)
+    def _interactive_install(self, o: InstallationObject):
+        o.print_diff()
 
         query = input("\nApply changes (y/N)? ")
         if query.lower() != "y":
             return
 
-        self._install_file(src, dst)
-        print("Changes applied for", dst)
+        self._install(o)
+        print("Changes applied for", o.dst)
 
-    def _install_file(self, src: Path, dst: Path):
-        dst.parent.mkdir(0o755, parents=True, exist_ok=True)
-        shutil.copy(src, dst)
-        self._config.add(src)
+    def _install(self, o: InstallationObject):
+        o.install()
+        self._config.add(o.dst_rel)
 
-    def _remove_file(self, src: Path):
-        dst = self._install_root / src
-        dst.unlink(missing_ok=True)
-        self._config.remove(src)
+    def _remove(self, path: Path):
+        full_path = self._install_root / path
+        full_path.unlink(missing_ok=True)
+        self._config.remove(path)
 
 
 if __name__ == "__main__":
@@ -264,7 +288,7 @@ if __name__ == "__main__":
     home = Path.home()
     config = DotfilesConfig(home / ".dotfiles")
     installer = Installer(home, config)
-    installer.add(INSTALL_FILES)
+    installer.add_files(INSTALL_FILES)
 
     try:
         installer.install(not args.non_interactive)
