@@ -8,6 +8,7 @@ import filecmp
 import json
 import shutil
 import sys
+import subprocess
 from difflib import unified_diff
 from pathlib import Path
 from typing import Iterable, List, Set
@@ -67,26 +68,14 @@ def color_diff(diff):
             yield line
 
 
-def get_git_revision() -> str:
-    """
-    Returns git revision from cwd. As git might be absent on a machine for some
-    weird reason, just read file directly without executing git.
-    """
-    cwd = Path.cwd()
-    head = cwd / ".git/HEAD"
+def get_dotfiles_revision() -> str:
+    dotfiles_root = Path(sys.argv[0]).parent.resolve()
 
-    if not head.exists():
-        return "unknown"
-
-    with open(head, encoding="utf-8") as f:
-        revision = f.readline().strip()
-
-    if revision.startswith("ref: "):
-        ref = revision[5:]
-        with open(path / ".git" / ref, encoding="utf-8") as f:
-            revision = f.readline().strip()
-
-    return revision
+    return (
+        subprocess.check_output(("git", "-C", str(dotfiles_root), "rev-parse", "HEAD"))
+        .decode()
+        .strip()
+    )
 
 
 class InstallationObject:
@@ -162,7 +151,7 @@ class DotfilesConfig:
     def save(self):
         content = {
             "version": self._VERSION,
-            "revision": get_git_revision(),
+            "revision": get_dotfiles_revision(),
             "installed": list(sorted(map(str, self._installed))),
         }
 
