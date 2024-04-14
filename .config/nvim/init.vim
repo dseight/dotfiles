@@ -86,6 +86,7 @@ require("nvim-treesitter.configs").setup {
         "cpp",
         "fish",
         "json",
+        "devicetree",
         "make",
         "markdown",
         "qmljs",
