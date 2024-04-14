@@ -51,7 +51,7 @@ INSTALL_NEOVIM_PLUGINS = {
     "lewis6991/gitsigns.nvim": "6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2",
     "miikanissi/modus-themes.nvim": "7cef53b10b6964a0be483fa27a3d66069cefaa6c",
     "nvim-lualine/lualine.nvim": "0a5a66803c7407767b799067986b4dc3036e1983",
-    "nvim-treesitter/nvim-treesitter": "a2d6678bb21052013d0dd7cb35dffbac13846c98",
+    "nvim-treesitter/nvim-treesitter": "7e6b044be8187c4c28dffa90ad0dc623dbe243f3",
 }
 INSTALL_VIM_PLUGINS = {
     **INSTALL_COMMON_VIM_PLUGINS,
