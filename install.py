@@ -78,12 +78,12 @@ def get_git_revision() -> str:
     if not head.exists():
         return "unknown"
 
-    with open(head) as f:
+    with open(head, encoding="utf-8") as f:
         revision = f.readline().strip()
 
     if revision.startswith("ref: "):
         ref = revision[5:]
-        with open(cwd / ".git" / ref) as f:
+        with open(path / ".git" / ref, encoding="utf-8") as f:
             revision = f.readline().strip()
 
     return revision
@@ -116,10 +116,10 @@ class File(InstallationObject):
         return not filecmp.cmp(self.src, self.dst)
 
     def print_diff(self):
-        with open(self.src) as f:
+        with open(self.src, encoding="utf-8") as f:
             src_lines = f.readlines()
 
-        with open(self.dst) as f:
+        with open(self.dst, encoding="utf-8") as f:
             dst_lines = f.readlines()
 
         diff = unified_diff(
@@ -146,7 +146,7 @@ class DotfilesConfig:
         if not path.exists():
             return
 
-        with open(self._path) as f:
+        with open(self._path, encoding="utf-8") as f:
             content = json.load(f)
             self._installed = set(map(Path, content["installed"]))
 
@@ -166,7 +166,7 @@ class DotfilesConfig:
             "installed": list(sorted(map(str, self._installed))),
         }
 
-        with open(self._path, "w") as f:
+        with open(self._path, "w", encoding="utf-8") as f:
             json.dump(content, f, indent=4)
 
 
