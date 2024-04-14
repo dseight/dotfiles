@@ -201,9 +201,9 @@ class Installer:
             if not sys.stdout.isatty():
                 raise InstallerNotOnTTYException()
             self._print_changes()
-            self._apply_changes(self._interactive_install)
+            self._apply_changes(self._interactive_install, self._interactive_remove)
         else:
-            self._apply_changes(self._install)
+            self._apply_changes(self._install, self._remove)
 
         self._config.save()
 
@@ -245,7 +245,7 @@ class Installer:
             )
             print("Removed:", "".join(pretty_removed), end="\n\n")
 
-    def _apply_changes(self, install_changed):
+    def _apply_changes(self, install_changed, remove):
         for o in self._new:
             self._install(o)
 
@@ -253,7 +253,7 @@ class Installer:
             install_changed(o)
 
         for path in self._removed:
-            self._remove(path)
+            remove(path, self._install_root / path)
 
     def _interactive_install(self, o: InstallationObject):
         o.print_diff()
@@ -269,8 +269,12 @@ class Installer:
         o.install()
         self._config.add(o.dst_rel)
 
-    def _remove(self, path: Path):
-        full_path = self._install_root / path
+    def _interactive_remove(self, path: Path, full_path: Path):
+        query = input(f'\nRemove "{full_path}" (y/N)? ')
+        if query.lower() == "y":
+            self._remove(path, full_path)
+
+    def _remove(self, path: Path, full_path: Path):
         full_path.unlink(missing_ok=True)
         self._config.remove(path)
 
