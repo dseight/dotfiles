@@ -11,7 +11,7 @@ import sys
 import subprocess
 from difflib import unified_diff
 from pathlib import Path
-from typing import Iterable, List, Set
+from typing import Dict, Iterable, List, Set
 
 INSTALL_FILES = (
     ".aliases",
@@ -40,6 +40,25 @@ INSTALL_FILES = (
     ".vimrc",
     ".zshrc",
 )
+
+INSTALL_COMMON_VIM_PLUGINS = {
+    "ntpeters/vim-better-whitespace": "029f35c783f1b504f9be086b9ea757a36059c846",
+}
+INSTALL_NEOVIM_PLUGINS = {
+    **INSTALL_COMMON_VIM_PLUGINS,
+    "folke/which-key.nvim": "4433e5ec9a507e5097571ed55c02ea9658fb268a",
+    "ibhagwan/fzf-lua": "97a88bb8b0785086d03e08a7f98f83998e0e1f8a",
+    "lewis6991/gitsigns.nvim": "6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2",
+    "miikanissi/modus-themes.nvim": "7cef53b10b6964a0be483fa27a3d66069cefaa6c",
+    "nvim-lualine/lualine.nvim": "0a5a66803c7407767b799067986b4dc3036e1983",
+    "nvim-treesitter/nvim-treesitter": "a2d6678bb21052013d0dd7cb35dffbac13846c98",
+}
+INSTALL_VIM_PLUGINS = {
+    **INSTALL_COMMON_VIM_PLUGINS,
+    "itchyny/lightline.vim": "58c97bc21c6f657d3babdd4eefce7593e30e75ce",
+    "itchyny/vim-gitbranch": "1a8ba866f3eaf0194783b9f8573339d6ede8f1ed",
+    "sheerun/vim-polyglot": "bc8a81d3592dab86334f27d1d43c080ebf680d42",
+}
 
 CL_RESET = "\033[m"
 CL_RED = "\033[31m"
@@ -123,6 +142,83 @@ class File(InstallationObject):
         shutil.copy(self.src, self.dst)
 
 
+class Repo(InstallationObject):
+    def __init__(self, url: str, rev: str, dst_rel: Path, root: Path):
+        super().__init__(dst_rel, root)
+        self.url = url
+        self.rev = rev
+
+    def changed(self) -> bool:
+        return (
+            self._get_current_revision() != self.rev
+            or self._get_current_remote_url() != self.url
+        )
+
+    def print_diff(self):
+        old = [
+            f"commit {self._get_current_revision()}\n",
+            f"remote {self._get_current_remote_url()}\n",
+        ]
+        new = [
+            f"commit {self.rev}\n",
+            f"remote {self.url}\n",
+        ]
+
+        diff = unified_diff(old, new, fromfile=str(self.dst), tofile=str(self.dst))
+        diff = color_diff(diff)
+
+        sys.stdout.writelines(diff)
+
+    def install(self):
+        if not Path(self.dst / ".git").exists():
+            self._clone()
+            return
+
+        if self._get_current_remote_url() != self.url:
+            self._git("remote", "set-url", "origin", self.url)
+
+        self._git("fetch")
+        self._git("checkout", "-q", self.rev)
+
+    def _clone(self):
+        self.dst.parent.mkdir(0o755, parents=True, exist_ok=True)
+        subprocess.check_call(("git", "clone", self.url, str(self.dst)))
+
+        try:
+            self._git("checkout", "-q", self.rev)
+        except subprocess.CalledProcessError:
+            # Don't leave repo checked out on an unknown revision, just remove
+            # it completely
+            shutil.rmtree(self.dst)
+            raise
+
+    def _git(self, *args):
+        subprocess.check_call(("git", "-C", str(self.dst), *args))
+
+    def _git_output(self, *args) -> str:
+        return (
+            subprocess.check_output(("git", "-C", str(self.dst), *args))
+            .decode()
+            .strip()
+        )
+
+    def _get_current_revision(self) -> str:
+        return self._git_output("rev-parse", "HEAD")
+
+    def _get_current_remote_url(self) -> str:
+        return self._git_output("remote", "get-url", "origin")
+
+
+class VimPlugin(Repo):
+    def __init__(self, name: str, rev: str, root: Path, neovim: bool):
+        dst_name = name.split("/")[-1]
+        if neovim:
+            dst_rel = Path(f".local/share/nvim/site/pack/default/start/{dst_name}")
+        else:
+            dst_rel = Path(f".vim/pack/default/start/{dst_name}")
+        super().__init__(f"https://github.com/{name}.git", rev, dst_rel, root)
+
+
 class DotfilesConfig:
     # If config format needs to be changed, version *must* be bumped,
     # and migrations have to be written
@@ -181,6 +277,11 @@ class Installer:
         """
         for f in files:
             o = File(Path(base + f), Path(f), self._install_root)
+            self._objects.append(o)
+
+    def add_vim_plugins(self, plugins: Dict[str, str], neovim: bool = False):
+        for name, rev in plugins.items():
+            o = VimPlugin(name, rev, self._install_root, neovim)
             self._objects.append(o)
 
     def install(self, interactive: bool):
@@ -264,7 +365,14 @@ class Installer:
             self._remove(path, full_path)
 
     def _remove(self, path: Path, full_path: Path):
-        full_path.unlink(missing_ok=True)
+        # At the moment of removal the type of an installation object is
+        # already lost, so just try to guess what to do with the given path.
+        # The better way would probably be splitting files and repos handling
+        # in the DotfilesConfig.
+        if full_path.is_dir():
+            shutil.rmtree(full_path)
+        else:
+            full_path.unlink(missing_ok=True)
         self._config.remove(path)
 
 
@@ -282,6 +390,8 @@ if __name__ == "__main__":
     config = DotfilesConfig(home / ".dotfiles")
     installer = Installer(home, config)
     installer.add_files(INSTALL_FILES)
+    installer.add_vim_plugins(INSTALL_NEOVIM_PLUGINS, neovim=True)
+    installer.add_vim_plugins(INSTALL_VIM_PLUGINS)
 
     try:
         installer.install(not args.non_interactive)

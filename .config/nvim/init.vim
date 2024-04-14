@@ -11,25 +11,7 @@ set tabstop=4
 
 " Plugins "
 
-" Install and run vim-plug on first run
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-call plug#begin(data_dir . '/plugged')
-
-Plug 'lewis6991/gitsigns.nvim', { 'commit': '6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2' }
-Plug 'ntpeters/vim-better-whitespace', { 'commit': '029f35c783f1b504f9be086b9ea757a36059c846' }
-Plug 'nvim-lualine/lualine.nvim', { 'commit': '0a5a66803c7407767b799067986b4dc3036e1983' }
-Plug 'nvim-treesitter/nvim-treesitter', { 'commit': 'a2d6678bb21052013d0dd7cb35dffbac13846c98', 'do': ':TSUpdate' }
-" NOTE: fzf binary must be installed separately
-Plug 'ibhagwan/fzf-lua', { 'commit': '97a88bb8b0785086d03e08a7f98f83998e0e1f8a', 'branch': 'main' }
-Plug 'folke/which-key.nvim', { 'commit': '4433e5ec9a507e5097571ed55c02ea9658fb268a' }
-Plug 'miikanissi/modus-themes.nvim', { 'commit': '7cef53b10b6964a0be483fa27a3d66069cefaa6c' }
-
-call plug#end()
+set loadplugins
 
 " Appearance "
 
