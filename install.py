@@ -297,6 +297,12 @@ class Installer:
 
         self._config.save()
 
+    def preview(self):
+        self._collect_changes()
+        self._print_changes()
+        for o in self._changed:
+            o.print_diff()
+
     def _collect_changes(self):
         for o in self._objects:
             if not o.dst.exists():
@@ -384,6 +390,12 @@ if __name__ == "__main__":
         action="store_true",
         help="install files in non-interactive mode",
     )
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="print what's changed without installing",
+    )
     args = parser.parse_args()
 
     home = Path.home()
@@ -392,6 +404,10 @@ if __name__ == "__main__":
     installer.add_files(INSTALL_FILES)
     installer.add_vim_plugins(INSTALL_NEOVIM_PLUGINS, neovim=True)
     installer.add_vim_plugins(INSTALL_VIM_PLUGINS)
+
+    if args.dry_run:
+        installer.preview()
+        sys.exit(0)
 
     try:
         installer.install(not args.non_interactive)
