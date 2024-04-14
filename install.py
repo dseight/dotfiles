@@ -291,6 +291,9 @@ class Installer:
             if not sys.stdout.isatty():
                 raise InstallerNotOnTTYException()
             self._print_changes()
+            query = input("\nContinue (y/N)? ")
+            if query.lower() != "y":
+                return
             self._apply_changes(self._interactive_install, self._interactive_remove)
         else:
             self._apply_changes(self._install, self._remove)
