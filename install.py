@@ -101,8 +101,12 @@ class InstallationObject:
     def __init__(self, dst_rel: Path, root: Path):
         # Relative installation path
         self.dst_rel = dst_rel
-        # Full installation path
-        self.dst = root / dst_rel
+        self.root = root
+
+    @property
+    def dst(self) -> Path:
+        """Full installation path"""
+        return self.root / self.dst_rel
 
     def changed(self) -> bool:
         raise NotImplementedError
