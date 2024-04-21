@@ -88,6 +88,10 @@ def color_diff(diff):
 
 
 def get_dotfiles_revision() -> str:
+    # Use sys.argv[0] instead of __file__ because this function can be called
+    # from a script in another directory. E.g. install.py might be imported
+    # from another script, and in this case revision of *that* repo should be
+    # used instead).
     dotfiles_root = Path(sys.argv[0]).parent.resolve()
 
     return (
