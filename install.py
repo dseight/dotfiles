@@ -11,35 +11,35 @@ import sys
 import subprocess
 from difflib import unified_diff
 from pathlib import Path
-from typing import Dict, Iterable, List, Set
+from typing import Dict, List, Optional, Set
 
-INSTALL_FILES = (
-    ".aliases",
-    ".config/fish/conf.d/00-path-common.fish",
-    ".config/fish/conf.d/00-path-darwin.fish",
-    ".config/fish/conf.d/50-env.fish",
-    ".config/fish/conf.d/abbreviations-git.fish",
-    ".config/fish/conf.d/abbreviations-other.fish",
-    ".config/fish/conf.d/aliases.fish",
-    ".config/fish/conf.d/toolbox-prompt-color.fish",
-    ".config/fish/config.fish",
-    ".config/fish/functions/compiledb_sailfish.fish",
-    ".config/fish/functions/nemodeploy.fish",
-    ".config/fish/functions/nemosetup.fish",
-    ".config/nvim/filetype.vim",
-    ".config/nvim/init.vim",
-    ".config/wezterm/colors/PaulMillrTweaked.toml",
-    ".config/wezterm/wezterm.lua",
-    ".mersdkrc",
-    ".mersdkuburc",
-    ".sbrules",
-    ".scripts/avg-time",
-    ".scripts/check-qml-ids",
-    ".scripts/colors",
-    ".tmux.conf",
-    ".vimrc",
-    ".zshrc",
-)
+INSTALL_FILES: Dict[str, Optional[str]] = {
+    ".aliases": None,
+    ".config/fish/conf.d/00-path-common.fish": None,
+    ".config/fish/conf.d/00-path-darwin.fish": None,
+    ".config/fish/conf.d/50-env.fish": None,
+    ".config/fish/conf.d/abbreviations-git.fish": None,
+    ".config/fish/conf.d/abbreviations-other.fish": None,
+    ".config/fish/conf.d/aliases.fish": None,
+    ".config/fish/conf.d/toolbox-prompt-color.fish": None,
+    ".config/fish/config.fish": None,
+    ".config/fish/functions/compiledb_sailfish.fish": None,
+    ".config/fish/functions/nemodeploy.fish": None,
+    ".config/fish/functions/nemosetup.fish": None,
+    ".config/nvim/filetype.vim": None,
+    ".config/nvim/init.vim": None,
+    ".config/wezterm/colors/PaulMillrTweaked.toml": None,
+    ".config/wezterm/wezterm.lua": None,
+    ".mersdkrc": None,
+    ".mersdkuburc": None,
+    ".sbrules": None,
+    ".scripts/avg-time": None,
+    ".scripts/check-qml-ids": None,
+    ".scripts/colors": None,
+    ".tmux.conf": None,
+    ".vimrc": None,
+    ".zshrc": None,
+}
 
 INSTALL_COMMON_VIM_PLUGINS = {
     "ntpeters/vim-better-whitespace": "029f35c783f1b504f9be086b9ea757a36059c846",
@@ -99,6 +99,23 @@ def get_dotfiles_revision() -> str:
         .decode()
         .strip()
     )
+
+
+def relocated(files: Dict[str, Optional[str]], path: str) -> Dict[str, str]:
+    """
+    Return dict with files, where their source is relocated to a specified dir.
+    Just a helper for usage in private dotfiles.
+
+    :param files: dict with dst_rel to src mappings
+    :param path: relocation path
+    """
+    result: Dict[str, str] = {}
+
+    for k, v in files.items():
+        src = v if v else k
+        result[k] = f"{path}/{src}"
+
+    return result
 
 
 class InstallationObject:
@@ -276,15 +293,20 @@ class Installer:
         self._changed: List[InstallationObject] = []
         self._removed: List[Path] = []
 
-    def add_files(self, files: Iterable[str], base: str = ""):
+    def add_files(self, files: Dict[str, Optional[str]]):
         """
         Add list of files to install.
 
-        :param files: list of files to install
-        :param base: base directory where these files are located
+        :param files: a map of files to install. Where the key is a relative
+            destination, and the value is the source. If the source is None,
+            then the relative destination will be used as a relative source
+            (from cwd).
         """
-        for f in files:
-            o = File(Path(base + f), Path(f), self._install_root)
+        for dst_rel, src in files.items():
+            if src:
+                o = File(Path(src), Path(dst_rel), self._install_root)
+            else:
+                o = File(Path(dst_rel), Path(dst_rel), self._install_root)
             self._objects.append(o)
 
     def add_vim_plugins(self, plugins: Dict[str, str], neovim: bool = False):

@@ -21,20 +21,21 @@ as a submodule (in this example, called "public"). Then, write a customized
 
 import sys
 from pathlib import Path
+from public.install import relocated
 from public.install import DotfilesConfig, Installer, InstallerNotOnTTYException
 from public.install import INSTALL_FILES as PUBLIC_FILES
 
-INSTALL_FILES = (
-    ".gitconfig",
-    ".ssh/config",
-)
+INSTALL_FILES = {
+    **relocated(PUBLIC_FILES, "public"),
+    ".gitconfig": None,
+    ".ssh/config": None,
+}
 
 if __name__ == "__main__":
     home = Path.home()
     config = DotfilesConfig(home / ".dotfiles")
 
     installer = Installer(home, config)
-    installer.add_files(PUBLIC_FILES, "public/")
     installer.add_files(INSTALL_FILES)
 
     try:
