@@ -415,41 +415,48 @@ class Installer:
         self._config.remove(path)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Install or update dotfiles.")
-    parser.add_argument(
-        "-y",
-        "--non-interactive",
-        action="store_true",
-        help="install files in non-interactive mode",
-    )
-    parser.add_argument(
-        "-d",
-        "--dry-run",
-        action="store_true",
-        help="print what's changed without installing",
-    )
-    args = parser.parse_args()
+class Cli:
+    def __init__(self):
+        home = Path.home()
+        config = DotfilesConfig(home / ".dotfiles")
+        self.installer = Installer(home, config)
 
-    home = Path.home()
-    config = DotfilesConfig(home / ".dotfiles")
-    installer = Installer(home, config)
-    installer.add_files(INSTALL_FILES)
-    installer.add_vim_plugins(INSTALL_NEOVIM_PLUGINS, neovim=True)
-    installer.add_vim_plugins(INSTALL_VIM_PLUGINS)
-
-    if args.dry_run:
-        installer.preview()
-        sys.exit(0)
-
-    try:
-        installer.install(not args.non_interactive)
-    except InstallerNotOnTTYException:
-        print(
-            "Cannot run interactive install while not at TTY. "
-            + "Please review the changes manually and run again "
-            + "with -y/--non-interactive."
+    def run(self):
+        parser = argparse.ArgumentParser(description="Install or update dotfiles.")
+        parser.add_argument(
+            "-y",
+            "--non-interactive",
+            action="store_true",
+            help="install files in non-interactive mode",
         )
-        sys.exit(1)
-    except KeyboardInterrupt:
-        sys.exit(0)
+        parser.add_argument(
+            "-d",
+            "--dry-run",
+            action="store_true",
+            help="print what's changed without installing",
+        )
+        args = parser.parse_args()
+
+        if args.dry_run:
+            self.installer.preview()
+            sys.exit(0)
+
+        try:
+            self.installer.install(not args.non_interactive)
+        except InstallerNotOnTTYException:
+            print(
+                "Cannot run interactive install while not at TTY. "
+                + "Please review the changes manually and run again "
+                + "with -y/--non-interactive."
+            )
+            sys.exit(1)
+        except KeyboardInterrupt:
+            sys.exit(0)
+
+
+if __name__ == "__main__":
+    cli = Cli()
+    cli.installer.add_files(INSTALL_FILES)
+    cli.installer.add_vim_plugins(INSTALL_NEOVIM_PLUGINS, neovim=True)
+    cli.installer.add_vim_plugins(INSTALL_VIM_PLUGINS)
+    cli.run()

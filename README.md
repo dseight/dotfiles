@@ -20,9 +20,7 @@ as a submodule (in this example, called "public"). Then, write a customized
 #!/usr/bin/env python3
 
 import sys
-from pathlib import Path
-from public.install import relocated
-from public.install import DotfilesConfig, Installer, InstallerNotOnTTYException
+from public.install import Cli, relocated
 from public.install import INSTALL_FILES as PUBLIC_FILES
 
 INSTALL_FILES = {
@@ -32,17 +30,7 @@ INSTALL_FILES = {
 }
 
 if __name__ == "__main__":
-    home = Path.home()
-    config = DotfilesConfig(home / ".dotfiles")
-
-    installer = Installer(home, config)
-    installer.add_files(INSTALL_FILES)
-
-    try:
-        installer.install(interactive=True)
-    except InstallerNotOnTTYException:
-        print("Cannot run interactive install while not at TTY.")
-        sys.exit(1)
-    except KeyboardInterrupt:
-        sys.exit(0)
+    cli = Cli()
+    cli.installer.add_files(INSTALL_FILES)
+    cli.run()
 ```
