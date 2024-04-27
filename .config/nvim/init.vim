@@ -64,6 +64,7 @@ nnoremap <leader>ga <cmd>Gitsigns stage_hunk<cr>
 nnoremap <leader>gu <cmd>Gitsigns undo_stage_hunk<cr>
 nnoremap <leader>gv <cmd>Gitsigns preview_hunk<cr>
 nnoremap <leader>gb <cmd>Gitsigns blame_line<cr>
+nnoremap <leader>gs <cmd>FzfLua git_status<cr>
 
 lua << END
 require("lualine").setup {
