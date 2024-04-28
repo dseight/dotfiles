@@ -49,6 +49,7 @@ INSTALL_NEOVIM_PLUGINS = {
     "folke/which-key.nvim": "4433e5ec9a507e5097571ed55c02ea9658fb268a",
     "ibhagwan/fzf-lua": "97a88bb8b0785086d03e08a7f98f83998e0e1f8a",
     "lewis6991/gitsigns.nvim": "6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2",
+    "mfussenegger/nvim-lint": "f098232d70cebe90e27404928c9bc19ca7a5a7b5",
     "miikanissi/modus-themes.nvim": "7cef53b10b6964a0be483fa27a3d66069cefaa6c",
     "neovim/nvim-lspconfig": "7133e85c3df14a387da8942c094c7edddcdef309",
     "nvim-lualine/lualine.nvim": "0a5a66803c7407767b799067986b4dc3036e1983",

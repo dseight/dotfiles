@@ -141,6 +141,21 @@ require("gitsigns").setup {
     },
 }
 
+require("lint").linters_by_ft = {
+    fish = { "fish" },
+    python = { "mypy" },
+    sh = { "shellcheck" },
+}
+
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+    callback = function()
+        -- Run linters defined in `linters_by_ft`
+        require("lint").try_lint()
+        -- Always run typos linter
+        require("lint").try_lint("typos")
+    end,
+})
+
 local lspconfig = require("lspconfig")
 lspconfig.clangd.setup {
     autostart = false,
