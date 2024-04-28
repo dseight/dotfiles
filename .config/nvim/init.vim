@@ -91,23 +91,25 @@ require("nvim-treesitter.configs").setup {
 }
 
 require("which-key").register({
-    [" "] = { "<cmd>FzfLua<cr>", "FzfLua" },
-    ["/"] = { "<cmd>FzfLua live_grep_glob<cr>", "Grep" },
-    f = { "<cmd>FzfLua files<cr>", "Files" },
-    t = { "<cmd>FzfLua tagstack<cr>", "Tag stack" },
-    b = { "<cmd>FzfLua buffers<cr>", "Buffers" },
-    j = { "<cmd>FzfLua jumps<cr>", "Jumps" },
-    g = {
-        name = "Git",
-        n = { "<cmd>Gitsigns next_hunk<cr>", "Next hunk" },
-        p = { "<cmd>Gitsigns prev_hunk<cr>", "Prev hunk" },
-        a = { "<cmd>Gitsigns stage_hunk<cr>", "Stage hunk" },
-        u = { "<cmd>Gitsigns undo_stage_hunk<cr>", "Undo stage hunk" },
-        v = { "<cmd>Gitsigns preview_hunk<cr>", "Preview hunk" },
-        b = { "<cmd>Gitsigns blame_line<cr>", "Blame line" },
-        s = { "<cmd>FzfLua git_status<cr>", "Status" },
+    ["<leader>"] = {
+        [" "] = { "<cmd>FzfLua<cr>", "FzfLua" },
+        ["/"] = { "<cmd>FzfLua live_grep_glob<cr>", "Grep" },
+        f = { "<cmd>FzfLua files<cr>", "Files" },
+        t = { "<cmd>FzfLua tagstack<cr>", "Tag stack" },
+        b = { "<cmd>FzfLua buffers<cr>", "Buffers" },
+        j = { "<cmd>FzfLua jumps<cr>", "Jumps" },
+        g = {
+            name = "Git",
+            n = { "<cmd>Gitsigns next_hunk<cr>", "Next hunk" },
+            p = { "<cmd>Gitsigns prev_hunk<cr>", "Prev hunk" },
+            a = { "<cmd>Gitsigns stage_hunk<cr>", "Stage hunk" },
+            u = { "<cmd>Gitsigns undo_stage_hunk<cr>", "Undo stage hunk" },
+            v = { "<cmd>Gitsigns preview_hunk<cr>", "Preview hunk" },
+            b = { "<cmd>Gitsigns blame_line<cr>", "Blame line" },
+            s = { "<cmd>FzfLua git_status<cr>", "Status" },
+        },
     },
-}, { prefix = "<leader>" })
+})
 
 require("gitsigns").setup {
     signs = {
