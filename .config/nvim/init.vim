@@ -41,6 +41,7 @@ set relativenumber
 set listchars=tab:>\ ,trail:·,nbsp:~
 set list
 set noshowmode " provided by lightline
+set completeopt-=preview " don't show preview *window* (not float) on completion
 
 " Bindings "
 
