@@ -108,11 +108,24 @@ require("which-key").register({
             b = { "<cmd>Gitsigns blame_line<cr>", "Blame line" },
             s = { "<cmd>FzfLua git_status<cr>", "Status" },
         },
+        d = {
+            name = "Diagnostics",
+            v = { "<cmd>lua vim.diagnostic.open_float()<cr>", "View float" },
+            s = { "<cmd>FzfLua diagnostics_document<cr>", "Show in file" },
+            w = { "<cmd>FzfLua diagnostics_workspace<cr>", "Show in workspace" },
+        },
+        l = {
+            name = "Language Server",
+            s = { "<cmd>LspStart<cr>", "Start Language Server" },
+            k = { "<cmd>LspStop<cr>", "Stop Language Server" },
+        },
     },
     ["["] = {
+        d = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous diagnostic" },
         g = { "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk" },
     },
     ["]"] = {
+        d = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next diagnostic" },
         g = { "<cmd>Gitsigns next_hunk<cr>", "Next git hunk" },
     },
 })
