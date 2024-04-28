@@ -109,6 +109,12 @@ require("which-key").register({
             s = { "<cmd>FzfLua git_status<cr>", "Status" },
         },
     },
+    ["["] = {
+        g = { "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk" },
+    },
+    ["]"] = {
+        g = { "<cmd>Gitsigns next_hunk<cr>", "Next git hunk" },
+    },
 })
 
 require("gitsigns").setup {
