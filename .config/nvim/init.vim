@@ -126,4 +126,12 @@ require("gitsigns").setup {
         changedelete = { text = "~" },
     },
 }
+
+local lspconfig = require("lspconfig")
+lspconfig.clangd.setup {
+    autostart = false,
+}
+lspconfig.ruff_lsp.setup {
+    cmd = { "python3", "-m", "ruff", "server", "--preview" },
+}
 END
