@@ -101,6 +101,17 @@ require("which-key").register({
     ["<leader>"] = {
         [" "] = { "<cmd>FzfLua<cr>", "FzfLua" },
         ["/"] = { "<cmd>FzfLua live_grep_glob<cr>", "Grep" },
+        ["*"] = {
+            function()
+                local fzf = require("fzf-lua")
+                local opts = {
+                    no_esc = true,
+                    search = [[\b]] .. fzf.utils.rg_escape(vim.fn.expand("<cword>")) .. [[\b]],
+                }
+                fzf.live_grep_glob(opts)
+            end,
+            "Grep cword"
+        },
         f = { "<cmd>FzfLua files<cr>", "Files" },
         t = { "<cmd>FzfLua tagstack<cr>", "Tag stack" },
         b = { "<cmd>FzfLua buffers<cr>", "Buffers" },
