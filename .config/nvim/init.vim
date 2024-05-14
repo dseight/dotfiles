@@ -54,6 +54,17 @@ let g:mapleader = "\<Space>"
 set timeoutlen=250
 
 lua << END
+local function diff_source()
+    local gitsigns = vim.b.gitsigns_status_dict
+    if gitsigns then
+        return {
+            added = gitsigns.added,
+            modified = gitsigns.changed,
+            removed = gitsigns.removed
+        }
+    end
+end
+
 require("lualine").setup {
     options = {
         icons_enabled = false,
@@ -61,6 +72,11 @@ require("lualine").setup {
         component_separators = '|',
     },
     sections = {
+        lualine_b = {
+            'b:gitsigns_head',
+            {'diff', source = diff_source},
+            'diagnostics',
+        },
         lualine_x = {'encoding', 'fileformat'},
     },
 }
