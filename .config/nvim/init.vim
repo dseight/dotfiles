@@ -147,6 +147,8 @@ require("which-key").register({
             v = { "<cmd>lua vim.diagnostic.open_float()<cr>", "View float" },
             s = { "<cmd>FzfLua diagnostics_document<cr>", "Show in file" },
             w = { "<cmd>FzfLua diagnostics_workspace<cr>", "Show in workspace" },
+            d = { "<cmd>lua vim.diagnostic.disable()<cr>", "Disable" },
+            e = { "<cmd>lua vim.diagnostic.enable()<cr>", "Enable" },
         },
         l = {
             name = "Language Server",
@@ -156,10 +158,12 @@ require("which-key").register({
     },
     ["["] = {
         d = { "<cmd>lua vim.diagnostic.goto_prev()<cr>", "Previous diagnostic" },
+        e = { "<cmd>lua vim.diagnostic.goto_prev{severity = 'error'}<cr>", "Previous error" },
         g = { "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk" },
     },
     ["]"] = {
         d = { "<cmd>lua vim.diagnostic.goto_next()<cr>", "Next diagnostic" },
+        e = { "<cmd>lua vim.diagnostic.goto_next{severity = 'error'}<cr>", "Next error" },
         g = { "<cmd>Gitsigns next_hunk<cr>", "Next git hunk" },
     },
 })
