@@ -44,6 +44,7 @@ INSTALL_FILES: Dict[str, Optional[str]] = {
 }
 
 INSTALL_COMMON_VIM_PLUGINS = {
+    "christoomey/vim-tmux-navigator": "5b3c701686fb4e6629c100ed32e827edf8dad01e",
     "ntpeters/vim-better-whitespace": "029f35c783f1b504f9be086b9ea757a36059c846",
 }
 INSTALL_NEOVIM_PLUGINS = {

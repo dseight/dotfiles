@@ -50,6 +50,13 @@ nnoremap <SPACE> <Nop>
 let mapleader=" "
 let g:mapleader = "\<Space>"
 
+" Use custom mappings for vim-tmux-navigator
+let g:tmux_navigator_no_mappings = 0
+nnoremap <silent> <M-h> :<C-U>TmuxNavigateLeft<cr>
+nnoremap <silent> <M-j> :<C-U>TmuxNavigateDown<cr>
+nnoremap <silent> <M-k> :<C-U>TmuxNavigateUp<cr>
+nnoremap <silent> <M-l> :<C-U>TmuxNavigateRight<cr>
+
 " By default timeoutlen is 1000 ms
 set timeoutlen=250
 
