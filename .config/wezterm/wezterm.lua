@@ -22,7 +22,7 @@ config.adjust_window_size_when_changing_font_size = false
 
 -- Navigation
 
-local nav_key = is_darwin() and 'CMD' or 'Alt'
+local nav_key = is_darwin() and 'CMD' or 'ALT'
 
 config.keys = {
     {
@@ -79,14 +79,14 @@ config.mouse_bindings = {
     -- Ctrl/CMD-click will open the link under the mouse cursor
     {
         event = { Up = { streak = 1, button = 'Left' } },
-        mods = is_darwin() and 'CMD' or 'Ctrl',
+        mods = is_darwin() and 'CMD' or 'CTRL',
         action = wezterm.action.OpenLinkAtMouseCursor,
     },
-    -- Disable the 'Down' event of Ctrl/CMD-click to avoid weird program
+    -- Disable the 'Down' event of CTRL/CMD-click to avoid weird program
     -- behaviors
     {
         event = { Down = { streak = 1, button = 'Left' } },
-        mods = is_darwin() and 'CMD' or 'Ctrl',
+        mods = is_darwin() and 'CMD' or 'CTRL',
         action = wezterm.action.Nop,
     },
 }
