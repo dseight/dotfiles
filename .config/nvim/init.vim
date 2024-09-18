@@ -133,6 +133,7 @@ require("which-key").register({
     ["<leader>"] = {
         [" "] = { "<cmd>FzfLua<cr>", "FzfLua" },
         ["/"] = { "<cmd>FzfLua live_grep_glob<cr>", "Grep" },
+        ["?"] = { "<cmd>FzfLua live_grep_glob resume=true<cr>", "Grep (resume)" },
         ["*"] = {
             function()
                 local fzf = require("fzf-lua")
@@ -145,7 +146,14 @@ require("which-key").register({
             "Grep cword"
         },
         f = { "<cmd>FzfLua files<cr>", "Files" },
-        t = { "<cmd>FzfLua tagstack<cr>", "Tag stack" },
+        F = { "<cmd>FzfLua files resume=true<cr>", "Files (resume)" },
+        t = {
+            name = "Tags",
+            s = { "<cmd>FzfLua tagstack<cr>", "Stack" },
+            w = { "<cmd>FzfLua tags_grep_cword<cr>", "Grep cword" },
+            W = { "<cmd>FzfLua tags_grep_cWORD<cr>", "Grep cWORD" },
+            ["/"] = { "<cmd>FzfLua tags_live_grep<cr>", "Grep" },
+        },
         b = { "<cmd>FzfLua buffers<cr>", "Buffers" },
         j = { "<cmd>FzfLua jumps<cr>", "Jumps" },
         g = {
@@ -157,6 +165,8 @@ require("which-key").register({
             v = { "<cmd>Gitsigns preview_hunk<cr>", "Preview hunk" },
             b = { "<cmd>Gitsigns blame_line<cr>", "Blame line" },
             s = { "<cmd>FzfLua git_status<cr>", "Status" },
+            l = { "<cmd>FzfLua git_bcommits<cr>", "Log (current file)" },
+            L = { "<cmd>FzfLua git_commits<cr>", "Log" },
         },
         d = {
             name = "Diagnostics",
