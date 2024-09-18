@@ -120,6 +120,15 @@ require("nvim-treesitter.configs").setup {
     },
 }
 
+require("fzf-lua").setup {
+    winopts = {
+        preview = {
+            layout = "vertical",
+            vertical = "up:55%",
+        },
+    },
+}
+
 require("which-key").register({
     ["<leader>"] = {
         [" "] = { "<cmd>FzfLua<cr>", "FzfLua" },
