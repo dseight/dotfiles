@@ -1,0 +1,5 @@
+[type.bitbake.extend-identifiers]
+# Package Name
+PN = "PN"
+# Package Version
+PV = "PV"

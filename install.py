@@ -39,6 +39,7 @@ INSTALL_FILES: Dict[str, Optional[str]] = {
     ".scripts/check-qml-ids": None,
     ".scripts/colors": None,
     ".tmux.conf": None,
+    ".typos.toml": None,
     ".vimrc": None,
     ".zshrc": None,
 }
