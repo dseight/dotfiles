@@ -50,13 +50,13 @@ INSTALL_COMMON_VIM_PLUGINS = {
 }
 INSTALL_NEOVIM_PLUGINS = {
     **INSTALL_COMMON_VIM_PLUGINS,
-    "folke/which-key.nvim": "4433e5ec9a507e5097571ed55c02ea9658fb268a",
-    "ibhagwan/fzf-lua": "97a88bb8b0785086d03e08a7f98f83998e0e1f8a",
-    "lewis6991/gitsigns.nvim": "6ef8c54fb526bf3a0bc4efb0b2fe8e6d9a7daed2",
-    "mfussenegger/nvim-lint": "f098232d70cebe90e27404928c9bc19ca7a5a7b5",
+    "folke/which-key.nvim": "4b7167f8fb2dba3d01980735e3509e172c024c29",
+    "ibhagwan/fzf-lua": "b107fb7a3893bcfb2d27b6f397cf290b3e0d1ca7",
+    "lewis6991/gitsigns.nvim": "76927d14d3fbd4ba06ccb5246e79d93b5442c188",
+    "mfussenegger/nvim-lint": "f707b3ae50417067fa63fdfe179b0bff6b380da1",
     "miikanissi/modus-themes.nvim": "24b34562a71cb75769411ca3146d35c093e7f4e6",
     "neovim/nvim-lspconfig": "7133e85c3df14a387da8942c094c7edddcdef309",
-    "nvim-lualine/lualine.nvim": "0a5a66803c7407767b799067986b4dc3036e1983",
+    "nvim-lualine/lualine.nvim": "544dd1583f9bb27b393f598475c89809c4d5e86b",
     "nvim-treesitter/nvim-treesitter": "7e6b044be8187c4c28dffa90ad0dc623dbe243f3",
 }
 INSTALL_VIM_PLUGINS = {
