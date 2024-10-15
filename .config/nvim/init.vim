@@ -28,6 +28,7 @@ require("modus-themes").setup({
         h.LineNr = { fg = c.fg_dim, bg = c.bg_main }
         h.LineNrAbove = { fg = c.fg_dim, bg = c.bg_main }
         h.LineNrBelow = { fg = c.fg_dim, bg = c.bg_main }
+        -- FIXME: this broke line highlight in netrw!!!
         h.CursorLine = { fg = c.none, bg = c.none }
         h.WhichKeyFloat = { bg = c.bg_dim }
 
