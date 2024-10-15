@@ -28,6 +28,7 @@ require("modus-themes").setup({
         h.LineNr = { fg = c.fg_dim, bg = c.bg_main }
         h.LineNrAbove = { fg = c.fg_dim, bg = c.bg_main }
         h.LineNrBelow = { fg = c.fg_dim, bg = c.bg_main }
+        h.CursorLine = { fg = c.none, bg = c.none }
         h.WhichKeyFloat = { bg = c.bg_dim }
 
         -- Actually highlight changed text within a changed line
@@ -48,7 +49,7 @@ END
 
 colorscheme modus
 set number
-set relativenumber
+set cursorline
 set listchars=tab:>\ ,trail:·,nbsp:~
 set list
 set noshowmode " provided by lightline
