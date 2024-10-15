@@ -32,8 +32,14 @@ require("modus-themes").setup({
         h.WhichKeyFloat = { bg = c.bg_dim }
 
         -- Actually highlight changed text within a changed line
-        -- FIXME: Not enough contrast
         h.DiffText = { fg = c.fg_changed, bg = c.bg_changed_refine }
+        -- Don't use too intense highlight for the changed lines.
+        -- This is needed for diffing logs, where a lot of changes
+        -- are just timestamp changes.
+        h.DiffChange = { fg = c.fg_changed, bg = c.bg_changed_faint }
+        -- Adjust the rest of the colors to be less intense.
+        h.DiffAdd = { fg = c.fg_added, bg = c.bg_added_faint }
+        h.DiffDelete = { fg = c.fg_removed, bg = c.bg_removed_faint }
 
         -- Make listchars just a tiny bit less distractive.
         -- FIXME: This don't play well with visual selection.
