@@ -178,6 +178,8 @@ require("which-key").register({
             v = { "<cmd>Gitsigns preview_hunk<cr>", "Preview hunk" },
             b = { "<cmd>Gitsigns blame_line<cr>", "Blame line" },
             B = { "<cmd>Gitsigns toggle_current_line_blame<cr>", "Toggle current line blame" },
+            d = { "<cmd>Gitsigns diffthis<cr>", "Diff" },
+            D = { "<cmd>Gitsigns diffthis HEAD~<cr>", "Diff (prev commit)" },
             s = { "<cmd>FzfLua git_status<cr>", "Status" },
             l = { "<cmd>FzfLua git_bcommits<cr>", "Log (current file)" },
             L = { "<cmd>FzfLua git_commits<cr>", "Log" },
