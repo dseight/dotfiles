@@ -34,6 +34,10 @@ require("modus-themes").setup({
         -- FIXME: Not enough contrast
         h.DiffText = { fg = c.fg_changed, bg = c.bg_changed_refine }
 
+        -- Make listchars just a tiny bit less distractive.
+        -- FIXME: This don't play well with visual selection.
+        h.Whitespace = { fg = c.border }
+
         -- Don't highlight background of git gutter
         h.GitSignsAdd = { fg = c.fg_added }
         h.GitSignsChange = { fg = c.fg_changed }
