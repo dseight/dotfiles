@@ -20,11 +20,6 @@ set termguicolors
 lua << END
 require("modus-themes").setup({
     on_colors = function(c)
-        -- Don't highlight background of git gutter. This also affects
-        -- :Gitsigns preview_hunk, thus bg is set to none instead of bg_main
-        c.bg_added = c.none
-        c.bg_changed = c.none
-        c.bg_removed = c.none
         -- Make status line less pronounced
         c.bg_status_line_active = c.bg_dim
         c.bg_status_line_inactive = c.bg_dim
@@ -34,6 +29,15 @@ require("modus-themes").setup({
         h.LineNrAbove = { fg = c.fg_dim, bg = c.bg_main }
         h.LineNrBelow = { fg = c.fg_dim, bg = c.bg_main }
         h.WhichKeyFloat = { bg = c.bg_dim }
+
+        -- Actually highlight changed text within a changed line
+        -- FIXME: Not enough contrast
+        h.DiffText = { fg = c.fg_changed, bg = c.bg_changed_refine }
+
+        -- Don't highlight background of git gutter
+        h.GitSignsAdd = { fg = c.fg_added }
+        h.GitSignsChange = { fg = c.fg_changed }
+        h.GitSignsDelete = { fg = c.fg_removed }
     end,
 })
 END
