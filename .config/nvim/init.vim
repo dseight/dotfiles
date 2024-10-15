@@ -19,21 +19,21 @@ set termguicolors
 
 lua << END
 require("modus-themes").setup({
-    on_colors = function(colors)
+    on_colors = function(c)
         -- Don't highlight background of git gutter. This also affects
         -- :Gitsigns preview_hunk, thus bg is set to none instead of bg_main
-        colors.bg_added = colors.none
-        colors.bg_changed = colors.none
-        colors.bg_removed = colors.none
+        c.bg_added = c.none
+        c.bg_changed = c.none
+        c.bg_removed = c.none
         -- Make status line less pronounced
-        colors.bg_status_line_active = colors.bg_dim
-        colors.bg_status_line_inactive = colors.bg_dim
+        c.bg_status_line_active = c.bg_dim
+        c.bg_status_line_inactive = c.bg_dim
     end,
-    on_highlights = function(highlights, colors)
-        highlights.LineNr = { fg = colors.fg_dim, bg = colors.bg_main }
-        highlights.LineNrAbove = { fg = colors.fg_dim, bg = colors.bg_main }
-        highlights.LineNrBelow = { fg = colors.fg_dim, bg = colors.bg_main }
-        highlights.WhichKeyFloat = { bg = colors.bg_dim }
+    on_highlights = function(h, c)
+        h.LineNr = { fg = c.fg_dim, bg = c.bg_main }
+        h.LineNrAbove = { fg = c.fg_dim, bg = c.bg_main }
+        h.LineNrBelow = { fg = c.fg_dim, bg = c.bg_main }
+        h.WhichKeyFloat = { bg = c.bg_dim }
     end,
 })
 END
