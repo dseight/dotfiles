@@ -258,6 +258,6 @@ lspconfig.clangd.setup {
     autostart = false,
 }
 lspconfig.ruff_lsp.setup {
-    cmd = { "python3", "-m", "ruff", "server", "--preview" },
+    cmd = { "ruff", "server", "--preview" },
 }
 END
