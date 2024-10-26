@@ -44,5 +44,6 @@ function kernel_compiledb --description 'Generate compile_commands.json for kern
         -e "s# -fno-ipa-sra # #g" \
         -e "s# -fno-allow-store-data-races # #g" \
         -e "s# -fconserve-stack # #g" \
+        -e "s# -mabi=lp64 # #g" \
         $out_file
 end
