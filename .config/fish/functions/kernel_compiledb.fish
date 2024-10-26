@@ -5,6 +5,9 @@ function _kernel_compiledb_usage
     echo "Yocto can be found under something like:"
     echo "  build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/linux-beaglebone_yocto-standard-build"
     echo
+    echo "This can also be used for u-boot. The build directory for it can be found under:"
+    echo "  build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/u-boot/2024.01/build"
+    echo
     echo "Options:"
     echo "  -h, --help              Show help"
     echo "  -b, --build BUILD_DIR   Path to the kernel build dir"
@@ -33,7 +36,16 @@ function kernel_compiledb --description 'Generate compile_commands.json for kern
     set -l build_dir (path resolve $build_dir)
     set -l out_file $source_dir/compile_commands.json
 
-    $source_dir/scripts/clang-tools/gen_compile_commands.py -d $build_dir -o $out_file
+    if test -x $source_dir/scripts/clang-tools/gen_compile_commands.py
+        set -f gen_compile_commands $source_dir/scripts/clang-tools/gen_compile_commands.py
+    else if test -x $source_dir/scripts/gen_compile_commands.py
+        set -f gen_compile_commands $source_dir/scripts/gen_compile_commands.py
+    else
+        echo "Can't find gen_compile_commands.py"
+        return 1
+    end
+
+    $gen_compile_commands -d $build_dir -o $out_file
     or return
 
     sed -i \
@@ -45,5 +57,8 @@ function kernel_compiledb --description 'Generate compile_commands.json for kern
         -e "s# -fno-allow-store-data-races # #g" \
         -e "s# -fconserve-stack # #g" \
         -e "s# -mabi=lp64 # #g" \
+        -e "s# -mthumb-interwork # #g" \
+        -e "s# -mword-relocations # #g" \
+        -e "s# -mgeneral-regs-only # #g" \
         $out_file
 end
