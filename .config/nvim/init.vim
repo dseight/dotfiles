@@ -212,8 +212,14 @@ require("which-key").register({
         },
         l = {
             name = "Language Server",
-            s = { "<cmd>LspStart<cr>", "Start Language Server" },
-            k = { "<cmd>LspStop<cr>", "Stop Language Server" },
+            l = { "<cmd>LspStart<cr>", "Start Language Server" },
+            L = { "<cmd>LspStop<cr>", "Stop Language Server" },
+            K = { vim.lsp.buf.hover, "Show Hover (use just K!)" },
+            R = { vim.lsp.buf.rename, "Rename" },
+            r = { "<cmd>FzfLua lsp_references<cr>", "References" },
+            i = { "<cmd>FzfLua lsp_incoming_calls<cr>", "Incoming calls" },
+            d = { "<cmd>FzfLua lsp_declarations<cr>", "Declarations" },
+            D = { "<cmd>FzfLua lsp_definitions<cr>", "Definitions" },
         },
     },
     ["["] = {
