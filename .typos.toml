@@ -3,3 +3,11 @@
 PN = "PN"
 # Package Version
 PV = "PV"
+
+[type.c.extend-words]
+# Words, often used in Linux kernel
+PN = "PN"
+PARM = "PARM"
+parms = "parms"
+filp = "filp"
+dout = "dout"
