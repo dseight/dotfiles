@@ -102,6 +102,13 @@ local function diff_source()
     end
 end
 
+local function diagnostic_enable(enable, ns_name)
+    local ns = vim.api.nvim_get_namespaces()[ns_name]
+    if ns ~= nil then
+        vim.diagnostic.enable(enable, {ns_id = ns})
+    end
+end
+
 require("lualine").setup {
     options = {
         icons_enabled = false,
@@ -207,8 +214,18 @@ require("which-key").register({
             v = { "<cmd>lua vim.diagnostic.open_float()<cr>", "View float" },
             s = { "<cmd>FzfLua diagnostics_document<cr>", "Show in file" },
             w = { "<cmd>FzfLua diagnostics_workspace<cr>", "Show in workspace" },
-            d = { "<cmd>lua vim.diagnostic.disable()<cr>", "Disable" },
-            e = { "<cmd>lua vim.diagnostic.enable()<cr>", "Enable" },
+            d = {
+                name = "Disable",
+                a = { vim.diagnostic.disable, "All" },
+                t = { function() diagnostic_enable(false, "typos") end, "Typos" },
+                c = { function() diagnostic_enable(false, "checkpatch") end, "checkpatch.pl" },
+            },
+            e = {
+                name = "Enable",
+                a = { vim.diagnostic.enable, "All" },
+                t = { function() diagnostic_enable(true, "typos") end, "Typos" },
+                c = { function() diagnostic_enable(true, "checkpatch") end, "checkpatch.pl" },
+            },
         },
         l = {
             name = "Language Server",
