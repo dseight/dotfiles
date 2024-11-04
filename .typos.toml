@@ -1,3 +1,7 @@
+[default.extend-identifiers]
+# PCI BARs
+BARs = "BARs"
+
 [type.bitbake.extend-identifiers]
 # Package Name
 PN = "PN"
