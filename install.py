@@ -13,6 +13,7 @@ from difflib import unified_diff
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
+# installation path -> path in repo. None implies "use the same path".
 INSTALL_FILES: Dict[str, Optional[str]] = {
     ".aliases": None,
     ".config/fish/conf.d/00-path-common.fish": None,
