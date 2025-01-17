@@ -1,0 +1,21 @@
+[core]
+	abbrev = 12
+[pretty]
+	fixes = Fixes: %h (\"%s\")
+	ref = commit %h (\"%s\")
+	# trailer could be added for issue references like ("Issue: JB#12345"):
+	# %(trailers:key=Issue,valueonly=true,separator=%x2C )
+	info = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(16,trunc)%aN %C(reset)%s
+	einfo = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(28,mtrunc)%aE %C(reset)%s
+[alias]
+	recursive-clean = !git clean -fxd && git submodule foreach --recursive 'git clean -fxd'
+[init]
+	defaultBranch = main
+[rerere]
+	enabled = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[fetch]
+	writeCommitGraph = true
