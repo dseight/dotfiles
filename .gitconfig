@@ -7,6 +7,13 @@
 	# %(trailers:key=Issue,valueonly=true,separator=%x2C )
 	info = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(16,trunc)%aN %C(reset)%s
 	einfo = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(28,mtrunc)%aE %C(reset)%s
+	gerrit = %C(yellow)%h %C(red)%(trailers:key=Change-Id,valueonly=true) %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(28,mtrunc)%aE %C(reset)%s
+# Add Change-Id as a recognized prefix, because Google is using a string not
+# known to git "(cherry picked from https://...)" which breaks trailers
+# recognition for "git interpret-trailers". There are a lot of examples of this
+# in https://android.googlesource.com/platform/frameworks/base
+[trailer "changeid"]
+	key = Change-Id
 [alias]
 	recursive-clean = !git clean -fxd && git submodule foreach --recursive 'git clean -fxd'
 [init]
