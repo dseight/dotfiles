@@ -12,10 +12,44 @@ function _compiledb_kernel_usage
     echo "  -h, --help              Show help"
     echo "  -b, --build BUILD_DIR   Path to the kernel build dir"
     echo "  -s, --source SRC_DIR    Path to the kernel source dir"
+    echo "  -a, --arch ARCH         Target architecture (u-boot only)"
+    echo "  --spl                   Use SPL-related entries (u-boot only)"
+end
+
+# When building u-boot for something like BeaglePlay (TI AM625) or BeagleY-AI
+# (TI AM67), it contains two u-boot builds in the same directory, which will
+# lead to having entries arm-...-gcc and aarch64-...-gcc for the same source
+# file. More than that, even for the same architecture there could be two
+# builds for aarch64 (one is SPL, another one is full-fledged u-boot).
+#
+# E.g., for the same file (arch/arm/lib/stack.c) there are four entries:
+# - arm-...-gcc ... -DCONFIG_SPL_BUILD ... -o spl/arch/arm/lib/stack.o
+# - arm-...-gcc ... -o spl/arch/arm/lib/stack.o
+# - aarch64-...-gcc ... -DCONFIG_SPL_BUILD ... -o spl/arch/arm/lib/stack.o
+# - aarch64-...-gcc ... -o spl/arch/arm/lib/stack.o
+#
+function _compiledb_kernel_uboot_filter
+    set -l out_file $argv[1]
+    set -l arch $argv[2]
+    set -l spl $argv[3]
+
+    command -q jq
+    or echo "Missing jq executable, skipping u-boot fixups" && return 1
+
+    test $spl -eq 0
+    and set -l negate_spl ""
+    or set -l negate_spl "| not"
+
+    set -l arch_selector "select(.command | startswith(\"$arch-\"))"
+    set -l spl_selector "select(.command | contains(\"CONFIG_SPL_BUILD\") $negate_spl)"
+    set -l query "[.[] | $arch_selector | $spl_selector]"
+
+    jq $query $out_file > $out_file.jq
+    mv $out_file.jq $out_file
 end
 
 function compiledb_kernel --description 'Generate compile_commands.json for kernel'
-    set -l options h/help b/build= s/source=
+    set -l options h/help b/build= s/source= a/arch= spl
     argparse -n compiledb_kernel $options -- $argv
     or return
 
@@ -29,6 +63,10 @@ function compiledb_kernel --description 'Generate compile_commands.json for kern
     set -ql _flag_source
     and set -l source_dir $_flag_source
     or set -l source_dir $build_dir/source
+
+    set -ql _flag_spl
+    and set -l spl 1
+    or set -l spl 0
 
     test -d $source_dir
     or echo "Invalid path to the source directory (-s/--source option)" && return 1
@@ -61,4 +99,8 @@ function compiledb_kernel --description 'Generate compile_commands.json for kern
         -e "s# -mword-relocations # #g" \
         -e "s# -mgeneral-regs-only # #g" \
         $out_file
+
+    if set -ql _flag_arch
+        _compiledb_kernel_uboot_filter $out_file $_flag_arch $spl
+    end
 end
