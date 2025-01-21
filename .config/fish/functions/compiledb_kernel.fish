@@ -1,5 +1,5 @@
-function _kernel_compiledb_usage
-    echo "Usage: kernel_compiledb [OPTIONS]"
+function _compiledb_kernel_usage
+    echo "Usage: compiledb_kernel [OPTIONS]"
     echo
     echo "Generate compile_commands.json for kernel. The build dir for kernel built with"
     echo "Yocto can be found under something like:"
@@ -14,13 +14,13 @@ function _kernel_compiledb_usage
     echo "  -s, --source SRC_DIR    Path to the kernel source dir"
 end
 
-function kernel_compiledb --description 'Generate compile_commands.json for kernel'
+function compiledb_kernel --description 'Generate compile_commands.json for kernel'
     set -l options h/help b/build= s/source=
-    argparse -n kernel_compiledb $options -- $argv
+    argparse -n compiledb_kernel $options -- $argv
     or return
 
     set -q _flag_help
-    and _kernel_compiledb_usage && return 0
+    and _compiledb_kernel_usage && return 0
 
     set -ql _flag_build
     and set -l build_dir $_flag_build
