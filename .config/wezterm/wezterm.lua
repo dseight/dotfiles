@@ -91,4 +91,27 @@ config.mouse_bindings = {
     },
 }
 
+config.hyperlink_rules = {
+    -- Linkify things that look like URLs and the host has a TLD name.
+    -- Compiled-in default. Used if you don't specify hyperlink_rules.
+    -- Differs from default in a way that it doesn't treat file:// as a valid URI.
+    {
+        regex = [[\bhttps?://[\w.-]+\.[a-z]{2,15}\S*\b]],
+        format = '$0',
+    },
+
+    -- Linkify things that look like URLs with numeric addresses as hosts.
+    -- E.g. http://127.0.0.1:8000 for a local development server.
+    {
+        regex = [[\b\w+://(?:[\d]{1,3}\.){3}[\d]{1,3}\S*\b]],
+        format = '$0',
+    },
+
+    -- Gerrit Change-Ids
+    {
+        regex = [[\bI[0-9a-f]{40}\b]],
+        format = 'https://gerrit-review.googlesource.com/q/$0',
+    },
+}
+
 return config
