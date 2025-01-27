@@ -102,5 +102,21 @@ function compiledb_kernel --description 'Generate compile_commands.json for kern
 
     if set -ql _flag_arch
         _compiledb_kernel_uboot_filter $out_file $_flag_arch $spl
+
+        set -ql _flag_spl
+        and set -l suffix "-spl"
+
+        set -l extra_flags ""
+
+        # Try to figure out KBUILD_OUTPUT based on .cmd file location
+        for f in (find $build_dir -name ".u-boot$suffix.cmd")
+            if grep -q "$arch-" $f
+                set -l KBUILD_OUTPUT (path dirname $f)
+                set extra_flags "-I$KBUILD_OUTPUT/include "
+                break
+            end
+        end
+
+        sed -i "s# -Iinclude # -Iinclude $extra_flags#" $out_file
     end
 end
