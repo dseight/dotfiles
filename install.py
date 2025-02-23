@@ -34,6 +34,7 @@ INSTALL_FILES: Dict[str, Optional[str]] = {
     ".config/nvim/filetype.vim": None,
     ".config/nvim/init.vim": None,
     ".config/wezterm/colors/PaulMillrTweaked.toml": None,
+    ".config/wezterm/colors/PaulMillrTweakedLight.toml": None,
     ".config/wezterm/wezterm.lua": None,
     ".gitconfig": None,
     ".mersdkrc": None,

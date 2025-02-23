@@ -1,0 +1,12 @@
+# PaulMillrTweakedLight
+[colors]
+foreground = "#0d0d0d"
+background = "#ffffff"
+cursor_bg = "#262626"
+cursor_border = "#262626"
+cursor_fg = "#f5f5f5"
+selection_bg = "#262626"
+selection_fg = "#ffffff"
+
+ansi = ["#d9d9d9","#cc0000","#007000","#bb7700","#004bbd","#990099","#0088b5","#262626"]
+brights = ["#595959","#ff0033","#00a300","#ff9900","#0066ff","#c800c8","#00b2d1","#000000"]
