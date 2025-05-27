@@ -269,6 +269,8 @@ require("lint").linters_by_ft = {
     sh = { "shellcheck" },
 }
 
+vim.diagnostic.config({ virtual_text = true })
+
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
     callback = function()
         -- Run linters defined in `linters_by_ft`
