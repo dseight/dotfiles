@@ -25,6 +25,7 @@ if status is-interactive
     abbr -a -g gfo git fetch origin
 
     abbr -a -g glp git log --patch-with-stat
+    abbr -a -g gls git log --stat
     abbr -a -g glg git log --graph
     abbr -a -g glo git log --oneline --decorate
     abbr -a -g glog git log --oneline --decorate --graph
@@ -36,7 +37,6 @@ if status is-interactive
     abbr -a -g gp git push
     abbr -a -g gpd git push --dry-run
     abbr -a -g gpf git push --force-with-lease
-    abbr -a -g gpff git push --force
 
     abbr -a -g gr git remote
     abbr -a -g gra git remote add
@@ -57,4 +57,7 @@ if status is-interactive
     abbr -a -g greh git reset --hard
 
     abbr -a -g gss git status --short
+    abbr -a -g gssi git status --short --ignore-submodules
+
+    abbr -a -g gwl git worktree list
 end
