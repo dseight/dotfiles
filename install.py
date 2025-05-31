@@ -61,7 +61,7 @@ INSTALL_NEOVIM_PLUGINS = {
     "mfussenegger/nvim-lint": "b47cbb249351873e3a571751c3fb66ed6369852f",
     "miikanissi/modus-themes.nvim": "61b8c10ec636f42baf6c845edb14b9ae2723711f",
     "neovim/nvim-lspconfig": "7133e85c3df14a387da8942c094c7edddcdef309",
-    "nvim-lualine/lualine.nvim": "544dd1583f9bb27b393f598475c89809c4d5e86b",
+    "nvim-lualine/lualine.nvim": "5a7cabf8e4a174c22351cbbdbe50310ee2172243",
     "dseight/nvim-treesitter": "049906433ead412c80fff1116c648c09f45a0b0a",
 }
 INSTALL_VIM_PLUGINS = {
