@@ -286,6 +286,7 @@ if vim.fn.has("nvim-0.11") == 1 then
     })
     -- vim.lsp.enable("clangd")
     vim.lsp.enable("ruff")
+    vim.lsp.enable("pyrefly")
 else
     local lspconfig = require("lspconfig")
     lspconfig.clangd.setup {
@@ -293,5 +294,15 @@ else
         cmd = { "clangd", "--clang-tidy" },
     }
     lspconfig.ruff.setup {}
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = "python",
+        callback = function (ev)
+            vim.lsp.start({
+                name = "pyrefly",
+                cmd = {"pyrefly", "lsp"},
+                root_dir = vim.fs.dirname(vim.fs.find({'.git'}, { upward = true })[1]),
+            })
+        end
+    })
 end
 END
