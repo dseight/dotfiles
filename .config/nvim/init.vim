@@ -280,12 +280,18 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
     end,
 })
 
-local lspconfig = require("lspconfig")
-lspconfig.clangd.setup {
-    autostart = false,
-    cmd = { "clangd", "--clang-tidy" },
-}
-lspconfig.ruff_lsp.setup {
-    cmd = { "ruff", "server", "--preview" },
-}
+if vim.fn.has("nvim-0.11") == 1 then
+    vim.lsp.config("clangd", {
+        cmd = { "clangd", "--clang-tidy" },
+    })
+    -- vim.lsp.enable("clangd")
+    vim.lsp.enable("ruff")
+else
+    local lspconfig = require("lspconfig")
+    lspconfig.clangd.setup {
+        autostart = false,
+        cmd = { "clangd", "--clang-tidy" },
+    }
+    lspconfig.ruff.setup {}
+end
 END
