@@ -280,42 +280,12 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
     end,
 })
 
--- Reference lsp configs can be found here:
--- https://github.com/neovim/nvim-lspconfig.git
-vim.lsp.config["*"] = {
-    root_markers = {
-        ".git",
-    },
-}
-
-vim.lsp.config["clangd"] = {
+local lspconfig = require("lspconfig")
+lspconfig.clangd.setup {
+    autostart = false,
     cmd = { "clangd", "--clang-tidy" },
-    filetypes = { "c", "cpp" },
-    root_markers = {
-        ".clangd",
-        ".clang-tidy",
-        "compile_commands.json",
-        ".git",
-    },
 }
--- vim.lsp.enable("clangd")
--- enabling it back in runtime is extremely idiotic:
---
---    :lua vim.lsp.enable("clangd")
---    :edit
---
-
-vim.lsp.config["ruff"] = {
+lspconfig.ruff_lsp.setup {
     cmd = { "ruff", "server", "--preview" },
-    filetypes = { "python" },
-    root_markers = {
-        "ruff.toml",
-        "pyproject.toml",
-        "setup.py",
-        "setup.cfg",
-        "requirements.txt",
-        ".git",
-    },
 }
-vim.lsp.enable("ruff")
 END
