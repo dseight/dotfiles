@@ -60,7 +60,9 @@ INSTALL_NEOVIM_PLUGINS = {
     "lewis6991/gitsigns.nvim": "7010000889bfb6c26065e0b0f7f1e6aa9163edd9",
     "mfussenegger/nvim-lint": "b47cbb249351873e3a571751c3fb66ed6369852f",
     "miikanissi/modus-themes.nvim": "61b8c10ec636f42baf6c845edb14b9ae2723711f",
-    "neovim/nvim-lspconfig": "7133e85c3df14a387da8942c094c7edddcdef309",
+    # use cb33dea610b7eff240985be9f6fe219920e630ef (v1.8.0) if support for
+    # neovim 0.9.x is needed
+    "neovim/nvim-lspconfig": "3ea99227e316c5028f57a4d86a1a7fd01dd876d0",
     "nvim-lualine/lualine.nvim": "5a7cabf8e4a174c22351cbbdbe50310ee2172243",
     "dseight/nvim-treesitter": "049906433ead412c80fff1116c648c09f45a0b0a",
 }
