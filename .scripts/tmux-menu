@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+
+from abc import ABC, abstractmethod
+from argparse import ArgumentParser, ArgumentTypeError, Namespace
+from concurrent.futures import ThreadPoolExecutor
+from subprocess import check_call, check_output
+from typing import Callable, Dict, List, Union
+import sys
+
+
+# Targeting Python 3.6, so no standard caching mechanisms available
+def cached(f: Callable):
+    def _cached(self, *args, **kwargs):
+        if not hasattr(self, "_cached_val"):
+            self._cached_val = dict()
+        if f.__name__ not in self._cached_val:
+            self._cached_val[f.__name__] = f(self, *args, **kwargs)
+        return self._cached_val[f.__name__]
+
+    return _cached
+
+
+class TmuxCommand(object):
+    def __init__(self, val: str):
+        self.val = val
+
+    def __str__(self):
+        return self.val
+
+
+class ShellCommand(TmuxCommand):
+    def __str__(self):
+        return f"run-shell '{self.val}'"
+
+
+class MenuItem(ABC):
+    @abstractmethod
+    def get(self) -> str: ...
+
+
+class Toggle(MenuItem):
+    @abstractmethod
+    def command(self) -> TmuxCommand: ...
+
+
+class Dropdown(MenuItem):
+    @abstractmethod
+    def options(self) -> List[str]: ...
+
+    @abstractmethod
+    def command(self, val) -> TmuxCommand: ...
+
+
+class TmuxToggle(Toggle):
+    def __init__(self, cmd: str, display: str):
+        self.cmd = TmuxCommand(cmd)
+        self.display = display
+
+    def get(self) -> str:
+        return self.display
+
+    def command(self) -> TmuxCommand:
+        return self.cmd
+
+
+class GitPropertyToggle(Toggle):
+    def __init__(self, name: str):
+        self.name = name
+
+    @cached
+    def get(self) -> str:
+        return (
+            check_output(("git", "config", "--global", "--get", self.name))
+            .decode()
+            .strip()
+        )
+
+    def command(self) -> ShellCommand:
+        val = "false" if self.get() == "true" else "true"
+        return ShellCommand(f"git config --global {self.name} {val}")
+
+
+class GitPropertyDropdown(Dropdown):
+    def __init__(self, name: str, values: List[str]):
+        self.name = name
+        self.values = values
+
+    def options(self) -> List[str]:
+        return self.values
+
+    @cached
+    def get(self) -> str:
+        return (
+            check_output(("git", "config", "--global", "--get", self.name))
+            .decode()
+            .strip()
+        )
+
+    def command(self, val: str) -> ShellCommand:
+        return ShellCommand(f"git config --global {self.name} {val}")
+
+
+def _prefetch(menu: Dict[str, MenuItem]):
+    def _get(item: Union[Dropdown, Toggle]):
+        if isinstance(item, Dropdown):
+            Dropdown.get(item)
+        elif isinstance(item, Toggle):
+            Toggle.get(item)
+
+    with ThreadPoolExecutor() as executor:
+        executor.map(_get, menu.values())
+
+
+def _command_open(menu: Dict[str, MenuItem], args: Namespace):
+    # Pre-fetch state from multiple menu options in parallel,
+    # to minimize UI lag
+    if args.prefetch:
+        _prefetch(menu)
+
+    tmux_command = [
+        # fmt: off
+        "tmux", "display-menu",
+        "-x", "0",
+        "-y", "S",
+        "-T", "#[align=centre]tmux-menu",
+        # fmt: on
+    ]
+
+    for name, item in menu.items():
+        label = f"{name:30} #[align=right]{item.get()}"
+
+        if isinstance(item, Toggle):
+            cmd = str(item.command())
+        elif isinstance(item, Dropdown):
+            cmd = str(ShellCommand(f"{__file__} dropdown {name}"))
+        else:
+            raise NotImplementedError
+
+        # No key assignments at the moment
+        key = ""
+        tmux_command.extend([label, key, cmd])
+
+    tmux_command.extend(["", "Close menu", "q", ""])
+
+    if args.dry_run:
+        print(tmux_command)
+    else:
+        check_call(tmux_command)
+
+
+def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace):
+    if args.name not in menu:
+        sys.exit(f"Menu has no '{args.name}'")
+
+    item = menu[args.name]
+
+    if not isinstance(item, Dropdown):
+        sys.exit(f"'{args.name}' is not a dropdown")
+
+    tmux_command = [
+        # fmt: off
+        "tmux", "display-menu",
+        "-x", "4",
+        "-y", "S",
+        "-T", f"#[align=centre]{args.name}",
+        # fmt: on
+    ]
+
+    for value in item.options():
+        # No key assignments at the moment
+        key = ""
+        tmux_command.extend([value, key, str(item.command(value))])
+
+    tmux_command.extend(["", "Close dropdown", "q", ""])
+
+    if args.dry_run:
+        print(tmux_command)
+    else:
+        check_call(tmux_command)
+
+
+def _command_list(menu: Dict[str, MenuItem], args: Namespace):
+    for key, item in menu.items():
+        print(f"{key:30} {item.get()}")
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Menu for tmux with various settings")
+    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+
+    parser_menu = subparsers.add_parser("open", help="Open tmux menu")
+    parser_menu.add_argument(
+        "--dry-run",
+        help="Don't execute tmux command, just print it",
+        action="store_true",
+    )
+    parser_menu.add_argument(
+        "--no-prefetch",
+        help="Don't prefetch values before displaying them",
+        action="store_false",
+        dest="prefetch",
+    )
+    parser_menu.set_defaults(func=_command_open)
+
+    parser_dropdown = subparsers.add_parser("dropdown", help="Open dropdown")
+    parser_dropdown.add_argument("name", help="Dropdown name")
+    parser_dropdown.add_argument(
+        "--dry-run",
+        help="Don't execute tmux command, just print it",
+        action="store_true",
+    )
+    parser_dropdown.set_defaults(func=_command_dropdown)
+
+    parser_list = subparsers.add_parser("list", help="List menu options")
+    parser_list.set_defaults(func=_command_list)
+
+    args = parser.parse_args()
+
+    # It's better to use required=True for add_subparsers() call,
+    # but it is available only in Python 3.7+. This script is targeting
+    # Python 3.6.
+    if args.subcommand is None:
+        parser.error("subcommand is required")
+
+    menu: Dict[str, MenuItem] = {
+        "gerrit.createChangeId": GitPropertyDropdown(
+            "gerrit.createChangeId", ["false", "true", "always"]
+        ),
+        "Sync panes": TmuxToggle(
+            "setw synchronize-panes",
+            "#{?pane_synchronized,ON,OFF}",
+        ),
+        "Pane input": TmuxToggle(
+            "select-pane #{?pane_input_off,-e,-d}",
+            "#{?pane_input_off,OFF,ON}",
+        ),
+    }
+
+    try:
+        args.func(menu, args)
+    except ArgumentTypeError as e:
+        parser.error(str(e))
