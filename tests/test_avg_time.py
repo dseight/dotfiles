@@ -1,7 +1,7 @@
 import unittest
-import util
 from datetime import timedelta
-import os
+
+import util
 
 util.import_module(".scripts/avg-time", "avgtime")
 from avgtime import parse_time

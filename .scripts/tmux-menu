@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import check_call, check_output
 from typing import Callable, Dict, List, Union
-import sys
 
 
 # Targeting Python 3.6, so no standard caching mechanisms available

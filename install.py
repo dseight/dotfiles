@@ -7,8 +7,8 @@ import argparse
 import filecmp
 import json
 import shutil
-import sys
 import subprocess
+import sys
 from difflib import unified_diff
 from pathlib import Path
 from typing import Dict, List, Optional, Set
