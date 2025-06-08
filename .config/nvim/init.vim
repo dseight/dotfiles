@@ -123,7 +123,7 @@ require("lualine").setup {
             {'diff', source = diff_source},
             'diagnostics',
         },
-        lualine_x = {'encoding', 'fileformat'},
+        lualine_x = {'encoding', 'fileformat', 'lsp_status'},
     },
 }
 
