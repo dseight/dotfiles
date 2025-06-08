@@ -286,6 +286,7 @@ if vim.fn.has("nvim-0.11") == 1 then
     })
     -- vim.lsp.enable("clangd")
     vim.lsp.enable("ruff")
+    vim.lsp.enable("rust_analyzer")
     vim.lsp.enable("pyrefly")
 else
     local lspconfig = require("lspconfig")
@@ -294,6 +295,7 @@ else
         cmd = { "clangd", "--clang-tidy" },
     }
     lspconfig.ruff.setup {}
+    lspconfig.rust_analyzer.setup {}
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "python",
         callback = function (ev)
