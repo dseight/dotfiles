@@ -28,6 +28,7 @@ INSTALL_FILES: Dict[str, Optional[str]] = {
     ".config/fish/functions/compiledb_sailfish.fish": None,
     ".config/fish/functions/fish_jobs_prompt.fish": None,
     ".config/fish/functions/fish_prompt.fish": None,
+    ".config/fish/functions/irg.fish": None,
     ".config/fish/functions/man.fish": None,
     ".config/fish/functions/nemodeploy.fish": None,
     ".config/fish/functions/nemosetup.fish": None,
