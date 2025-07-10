@@ -38,6 +38,12 @@ class MenuItem(ABC):
     def get(self) -> str: ...
 
 
+class MenuKeyMapping:
+    def __init__(self, key: str, val: MenuItem):
+        self.key = key
+        self.val = val
+
+
 class Toggle(MenuItem):
     @abstractmethod
     def command(self) -> TmuxCommand: ...
@@ -100,8 +106,10 @@ class GitPropertyDropdown(Dropdown):
         return ShellCommand(f"git config --global {self.name} {val}")
 
 
-def _prefetch(menu: Dict[str, MenuItem]) -> None:
-    def _get(item: Union[Dropdown, Toggle]) -> None:
+def _prefetch(menu: Dict[str, Union[MenuItem, MenuKeyMapping]]) -> None:
+    def _get(item: Union[MenuItem, MenuKeyMapping]) -> None:
+        if isinstance(item, MenuKeyMapping):
+            item = item.val
         if isinstance(item, Dropdown):
             Dropdown.get(item)
         elif isinstance(item, Toggle):
@@ -111,7 +119,9 @@ def _prefetch(menu: Dict[str, MenuItem]) -> None:
         executor.map(_get, menu.values())
 
 
-def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
+def _command_open(
+    menu: Dict[str, Union[MenuItem, MenuKeyMapping]], args: Namespace
+) -> None:
     # Pre-fetch state from multiple menu options in parallel,
     # to minimize UI lag
     if args.prefetch:
@@ -127,6 +137,12 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
     ]
 
     for name, item in menu.items():
+        if isinstance(item, MenuKeyMapping):
+            key = item.key
+            item = item.val
+        else:
+            key = ""
+
         label = f"{name:30} #[align=right]{item.get()}"
 
         if isinstance(item, Toggle):
@@ -136,8 +152,6 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
         else:
             raise NotImplementedError
 
-        # No key assignments at the moment
-        key = ""
         tmux_command.extend([label, key, cmd])
 
     tmux_command.extend(["", "Close menu", "q", ""])
@@ -148,7 +162,9 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
         check_call(tmux_command)
 
 
-def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace) -> None:
+def _command_dropdown(
+    menu: Dict[str, Union[MenuItem, MenuKeyMapping]], args: Namespace
+) -> None:
     if args.name not in menu:
         sys.exit(f"Menu has no '{args.name}'")
 
@@ -179,8 +195,12 @@ def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace) -> None:
         check_call(tmux_command)
 
 
-def _command_list(menu: Dict[str, MenuItem], args: Namespace) -> None:
+def _command_list(
+    menu: Dict[str, Union[MenuItem, MenuKeyMapping]], args: Namespace
+) -> None:
     for key, item in menu.items():
+        if isinstance(item, MenuKeyMapping):
+            item = item.val
         print(f"{key:30} {item.get()}")
 
 
@@ -222,7 +242,7 @@ if __name__ == "__main__":
     if args.subcommand is None:
         parser.error("subcommand is required")
 
-    menu: Dict[str, MenuItem] = {
+    menu: Dict[str, Union[MenuItem, MenuKeyMapping]] = {
         "gerrit.createChangeId": GitPropertyDropdown(
             "gerrit.createChangeId", ["false", "true", "always"]
         ),
