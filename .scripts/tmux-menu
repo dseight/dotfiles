@@ -232,17 +232,24 @@ if __name__ == "__main__":
     if args.subcommand is None:
         parser.error("subcommand is required")
 
-    menu: Dict[str, MenuItem] = {
-        "gerrit.createChangeId": GitPropertyDropdown(
-            "gerrit.createChangeId", ["false", "true", "always"]
+    menu: Dict[str, Union[MenuItem, MenuKeyMapping]] = {
+        "gerrit.createChangeId": MenuKeyMapping(
+            "c",
+            GitPropertyDropdown("gerrit.createChangeId", ["false", "true", "always"]),
         ),
-        "Sync panes": TmuxToggle(
-            "setw synchronize-panes",
-            "#{?pane_synchronized,ON,OFF}",
+        "Sync panes": MenuKeyMapping(
+            "s",
+            TmuxToggle(
+                "setw synchronize-panes",
+                "#{?pane_synchronized,ON,OFF}",
+            ),
         ),
-        "Pane input": TmuxToggle(
-            "select-pane #{?pane_input_off,-e,-d}",
-            "#{?pane_input_off,OFF,ON}",
+        "Pane input": MenuKeyMapping(
+            "i",
+            TmuxToggle(
+                "select-pane #{?pane_input_off,-e,-d}",
+                "#{?pane_input_off,OFF,ON}",
+            ),
         ),
     }
 
