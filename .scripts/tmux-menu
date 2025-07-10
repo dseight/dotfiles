@@ -9,7 +9,7 @@ from typing import Callable, Dict, List, Union
 
 
 # Targeting Python 3.6, so no standard caching mechanisms available
-def cached(f: Callable):
+def cached(f: Callable) -> Callable:
     def _cached(self, *args, **kwargs):
         if not hasattr(self, "_cached_val"):
             self._cached_val = dict()
@@ -24,12 +24,12 @@ class TmuxCommand(object):
     def __init__(self, val: str):
         self.val = val
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.val
 
 
 class ShellCommand(TmuxCommand):
-    def __str__(self):
+    def __str__(self) -> str:
         return f"run-shell '{self.val}'"
 
 
@@ -48,7 +48,7 @@ class Dropdown(MenuItem):
     def options(self) -> List[str]: ...
 
     @abstractmethod
-    def command(self, val) -> TmuxCommand: ...
+    def command(self, val: str) -> TmuxCommand: ...
 
 
 class TmuxToggle(Toggle):
@@ -100,8 +100,8 @@ class GitPropertyDropdown(Dropdown):
         return ShellCommand(f"git config --global {self.name} {val}")
 
 
-def _prefetch(menu: Dict[str, MenuItem]):
-    def _get(item: Union[Dropdown, Toggle]):
+def _prefetch(menu: Dict[str, MenuItem]) -> None:
+    def _get(item: Union[Dropdown, Toggle]) -> None:
         if isinstance(item, Dropdown):
             Dropdown.get(item)
         elif isinstance(item, Toggle):
@@ -111,7 +111,7 @@ def _prefetch(menu: Dict[str, MenuItem]):
         executor.map(_get, menu.values())
 
 
-def _command_open(menu: Dict[str, MenuItem], args: Namespace):
+def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
     # Pre-fetch state from multiple menu options in parallel,
     # to minimize UI lag
     if args.prefetch:
@@ -148,7 +148,7 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace):
         check_call(tmux_command)
 
 
-def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace):
+def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace) -> None:
     if args.name not in menu:
         sys.exit(f"Menu has no '{args.name}'")
 
@@ -179,7 +179,7 @@ def _command_dropdown(menu: Dict[str, MenuItem], args: Namespace):
         check_call(tmux_command)
 
 
-def _command_list(menu: Dict[str, MenuItem], args: Namespace):
+def _command_list(menu: Dict[str, MenuItem], args: Namespace) -> None:
     for key, item in menu.items():
         print(f"{key:30} {item.get()}")
 
