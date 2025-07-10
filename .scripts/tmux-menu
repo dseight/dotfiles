@@ -38,6 +38,12 @@ class MenuItem(ABC):
     def get(self) -> str: ...
 
 
+class MenuKeyMapping:
+    def __init__(self, key: str, val: MenuItem):
+        self.key = key
+        self.val = val
+
+
 class Toggle(MenuItem):
     @abstractmethod
     def command(self) -> TmuxCommand: ...
@@ -129,6 +135,12 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
     for name, item in menu.items():
         label = f"{name:30} #[align=right]{item.get()}"
 
+        if isinstance(item, MenuKeyMapping):
+            key = item.key
+            item = item.val
+        else:
+            key = ""
+
         if isinstance(item, Toggle):
             cmd = str(item.command())
         elif isinstance(item, Dropdown):
@@ -136,8 +148,6 @@ def _command_open(menu: Dict[str, MenuItem], args: Namespace) -> None:
         else:
             raise NotImplementedError
 
-        # No key assignments at the moment
-        key = ""
         tmux_command.extend([label, key, cmd])
 
     tmux_command.extend(["", "Close menu", "q", ""])
