@@ -1,0 +1,45 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: rpmdeps [-h] [PACKAGE]"
+    echo
+    echo "List packages and what depends on them. Requires fzf."
+    echo
+    echo "Parameters:"
+    echo "  PACKAGE         If provided, show dependency info for this package"
+    echo
+    echo "Options:"
+    echo "  -h, --help      Show this message"
+}
+
+show_package_deps() {
+    rpm -qi "$1"
+    echo
+
+    rpm -q --queryformat "[%{PROVIDES}\n]" "$1" |
+        while read -r name; do
+            echo "$name:"
+            rpm -q --queryformat "[%{NAME}.%{VERSION}.%{ARCH}\n]" \
+                --whatrequires "$name" | sed 's/^/\t/'
+            echo
+        done
+}
+
+show_all() {
+    rpm -qa --queryformat "[%{NAME}\n]" | sort | fzf --ansi \
+        --preview "$0 {}" \
+        --preview-window=right:60%
+}
+
+main() {
+    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        usage
+        exit
+    elif [ -n "$1" ]; then
+        show_package_deps "$1"
+    else
+        show_all
+    fi
+}
+
+main "$@"
