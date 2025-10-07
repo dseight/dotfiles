@@ -170,6 +170,9 @@ def _command_dropdown(
 
     item = menu[args.name]
 
+    if isinstance(item, MenuKeyMapping):
+        item = item.val
+
     if not isinstance(item, Dropdown):
         sys.exit(f"'{args.name}' is not a dropdown")
 
