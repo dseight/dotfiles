@@ -2,15 +2,17 @@
 # PCI BARs
 BARs = "BARs"
 
-[type.bitbake.extend-identifiers]
-# Package Name
+[default.extend-words]
+# Package Name, Port Number, etc.
 PN = "PN"
+pn = "pn"
+
+[type.bitbake.extend-identifiers]
 # Package Version
 PV = "PV"
 
 [type.c.extend-words]
 # Words, often used in Linux kernel
-PN = "PN"
 PARM = "PARM"
 parms = "parms"
 filp = "filp"
