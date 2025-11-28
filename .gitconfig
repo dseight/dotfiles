@@ -8,6 +8,7 @@
 	info = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(16,trunc)%aN %C(reset)%s
 	einfo = %C(yellow)%h %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(28,mtrunc)%aE %C(reset)%s
 	gerrit = %C(yellow)%h %C(red)%(trailers:key=Change-Id,valueonly=true) %C(green)%as %C(bold)%cs%C(reset) %C(cyan)%<(28,mtrunc)%aE %C(reset)%s
+	oneline-with-fixes = %C(auto)%h%(decorate) %s %C(red)%(trailers:key=Fixes,separator=%x2C )
 # Add Change-Id as a recognized prefix, because Google is using a string not
 # known to git "(cherry picked from https://...)" which breaks trailers
 # recognition for "git interpret-trailers". There are a lot of examples of this
