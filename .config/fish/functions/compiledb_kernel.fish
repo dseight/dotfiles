@@ -98,6 +98,9 @@ function compiledb_kernel --description 'Generate compile_commands.json for kern
         -e "s# -mthumb-interwork # #g" \
         -e "s# -mword-relocations # #g" \
         -e "s# -mgeneral-regs-only # #g" \
+        -e "s# -mindirect-branch=[a-z-]+ # #g" \
+        -e "s# -mindirect-branch-register # #g" \
+        -e "s# -mpreferred-stack-boundary=[0-9]+ # #g" \
         $out_file
 
     if set -ql _flag_arch
