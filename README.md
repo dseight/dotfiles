@@ -22,6 +22,7 @@ as a submodule (in this example, called "public"). Then, write a customized
 import sys
 from public.install import Cli, relocated
 from public.install import INSTALL_FILES as PUBLIC_FILES
+from public.install import INSTALL_NEOVIM_PLUGINS, INSTALL_VIM_PLUGINS
 
 INSTALL_FILES = {
     **relocated(PUBLIC_FILES, "public"),
@@ -30,7 +31,12 @@ INSTALL_FILES = {
 }
 
 if __name__ == "__main__":
+    # Exclude some unwanted files
+    del INSTALL_FILES[".zshrc"]
+
     cli = Cli()
     cli.installer.add_files(INSTALL_FILES)
+    cli.installer.add_vim_plugins(INSTALL_NEOVIM_PLUGINS, neovim=True)
+    cli.installer.add_vim_plugins(INSTALL_VIM_PLUGINS)
     cli.run()
 ```
