@@ -17,6 +17,7 @@ if status is-interactive
     abbr -a -g gco git checkout
 
     abbr -a -g gd git diff
+    abbr -a -g gdi git diff --ignore-submodules
     abbr -a -g gds git diff --staged
     abbr -a -g gdw git diff --word-diff
 
