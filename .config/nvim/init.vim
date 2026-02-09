@@ -3,6 +3,10 @@ set so=999
 " disable mouse
 set mouse=
 
+" Uncomment the line below if TmuxNavigate* takes too long because of the
+" non-default shell
+" set shell=/usr/bin/bash\ --norc
+
 " File behaviour "
 
 set expandtab
