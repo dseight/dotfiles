@@ -254,14 +254,14 @@ if __name__ == "__main__":
             "s",
             TmuxToggle(
                 "setw synchronize-panes",
-                "#{?pane_synchronized,ON,OFF}",
+                "#{?pane_synchronized,#[fg=#{@color_green}]ON,#[fg=#{@color_red}]OFF}",
             ),
         ),
         "Pane input": MenuKeyMapping(
             "i",
             TmuxToggle(
                 "select-pane #{?pane_input_off,-e,-d}",
-                "#{?pane_input_off,OFF,ON}",
+                "#{?pane_input_off,#[fg=#{@color_red}]OFF,#[fg=#{@color_green}]ON}",
             ),
         ),
     }
