@@ -27,3 +27,14 @@
 	sort = -committerdate
 [fetch]
 	writeCommitGraph = true
+
+# submodules in qemu rely on a non-existing url
+[url "https://github.com/tianocore/edk2-subhook.git"]
+	insteadOf = "https://github.com/Zeex/subhook.git"
+
+# Open Hardware repository first migrated to ohwr.org/project, but then to
+# gitlab.com/ohwr/project. Update all old URLs to use gitlab.
+[url "https://gitlab.com/ohwr/project"]
+	insteadOf = git://ohwr.org/hdl-core-lib
+[url "https://gitlab.com/ohwr/project"]
+	insteadOf = https://ohwr.org/project
