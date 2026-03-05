@@ -13,7 +13,7 @@ set expandtab
 set shiftwidth=4
 set tabstop=4
 " Wrap git commit messages
-autocmd bufreadpre COMMIT_EDITMSG setlocal textwidth=72
+autocmd FileType gitcommit setlocal textwidth=72 formatoptions+=t colorcolumn=73
 
 " Plugins "
 

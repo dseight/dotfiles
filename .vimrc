@@ -38,6 +38,8 @@ set nostartofline
 
 set shiftwidth=4
 set tabstop=4
+" Wrap git commit messages
+autocmd FileType gitcommit setlocal textwidth=72 formatoptions+=t colorcolumn=73
 
 " Bindings "
 
