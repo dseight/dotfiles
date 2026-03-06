@@ -9,6 +9,7 @@ import json
 import shutil
 import subprocess
 import sys
+from abc import ABC, abstractmethod
 from difflib import unified_diff
 from pathlib import Path
 from typing import Dict, List, Optional, Set
@@ -134,7 +135,7 @@ def relocated(files: Dict[str, Optional[str]], path: str) -> Dict[str, str]:
     return result
 
 
-class InstallationObject:
+class InstallationObject(ABC):
     def __init__(self, dst_rel: Path, root: Path):
         # Relative installation path
         self.dst_rel = dst_rel
@@ -145,14 +146,14 @@ class InstallationObject:
         """Full installation path"""
         return self.root / self.dst_rel
 
-    def changed(self) -> bool:
-        raise NotImplementedError
+    @abstractmethod
+    def changed(self) -> bool: ...
 
-    def print_diff(self):
-        raise NotImplementedError
+    @abstractmethod
+    def print_diff(self): ...
 
-    def install(self):
-        raise NotImplementedError
+    @abstractmethod
+    def install(self): ...
 
 
 class File(InstallationObject):
