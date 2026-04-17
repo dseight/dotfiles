@@ -1,0 +1,17 @@
+#!/bin/sh
+
+usage() {
+    echo "usage: git-ilog [<options>] [<revision-range>] [[--] <path>...]"
+}
+
+if [ $# -eq 1 ] && [ "$1" = "-h" ]; then
+    usage
+    exit 0
+fi
+
+git log --pretty="%C(yellow)%h %C(reset)%s" --color=always $@ | fzf \
+    --ansi \
+    --disabled \
+    --bind "change:reload(git log --pretty='%C(yellow)%h %C(reset)%s' --color=always --grep {q} $@)" \
+    --preview 'echo {} | cut -d" " -f1 | xargs -I% git show --color=always %' \
+    --preview-window=right:60%
