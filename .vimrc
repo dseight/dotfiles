@@ -32,6 +32,7 @@ set incsearch
 
 " File behaviour "
 
+set nomodeline
 set expandtab
 set smarttab
 set nostartofline
