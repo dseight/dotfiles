@@ -80,6 +80,26 @@ augroup CursorLineOnlyInNetrw
         \ | endif
 augroup END
 
+" Extra functions "
+
+function! s:GitWeblink(line1, line2)
+    let l:range = a:line1
+    if a:line1 != a:line2
+        let l:range .= "-" . a:line2
+    endif
+    let l:file_with_range = expand('%:.') . ":" . l:range
+    let l:cmd = "git weblink -n " . shellescape(l:file_with_range)
+    let l:link = system(l:cmd)
+    " Copy the link (without a newline) to the system clipboard
+    let @+ = trim(l:link)
+endfunction
+
+" Run :GitWeblink on a range to get a link
+command! -range=% GitWeblink call <SID>GitWeblink(<line1>, <line2>)
+
+" Map GitWeblink for visual mode
+xmap <silent> L :GitWeblink<cr>
+
 " Bindings "
 
 " Use space as <leader> key
