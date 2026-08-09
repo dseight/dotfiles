@@ -296,7 +296,10 @@ require("lint").linters_by_ft = {
 
 vim.diagnostic.config({ virtual_text = true })
 
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+-- BufReadPost executed before filetype detection, so no linter results
+-- would be visible on initial file opening without running this at the
+-- moment when FileType becomes to be known
+vim.api.nvim_create_autocmd({ "FileType", "BufReadPost", "BufWritePost" }, {
     callback = function()
         -- Run linters defined in `linters_by_ft`
         require("lint").try_lint()
